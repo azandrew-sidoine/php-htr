@@ -1,0 +1,27 @@
+{
+    "name": "drewlabs/htr",
+    "description": "HTTP Web Service Test runner implementation using PHP Programming language and configuration files written in YAML or JSON format",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "HTTP",
+        "Test",
+        "YAML"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Drewlabs\\Htr\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "azandrew-sidoine",
+            "email": "asmyns.platonnas29@gmail.com"
+        }
+    ],
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "require-dev": {
+        "drewlabs/mdl-cli": "^0.2.0"
+    }
+}

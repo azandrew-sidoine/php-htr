@@ -1,0 +1,106 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "8f04f02af3c7aefecf5e5d6561a3179d",
+    "packages": [],
+    "packages-dev": [
+        {
+            "name": "drewlabs/code-generator",
+            "version": "v0.2.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/azandrew-sidoine/drewlabs-php-code-generator.git",
+                "reference": "bc8b149346d3b448b6bd2556b9b5191294290857"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/azandrew-sidoine/drewlabs-php-code-generator/zipball/bc8b149346d3b448b6bd2556b9b5191294290857",
+                "reference": "bc8b149346d3b448b6bd2556b9b5191294290857",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "./src/proxies.php"
+                ],
+                "psr-4": {
+                    "Drewlabs\\CodeGenerator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "azandrew-sidoine",
+                    "email": "asmyns.platonnas29@gmail.com"
+                }
+            ],
+            "description": "Simple utility classes for generating PHP classes, methods, properties and interfaces",
+            "support": {
+                "source": "https://github.com/azandrew-sidoine/drewlabs-php-code-generator/tree/v0.2.4"
+            },
+            "time": "2023-03-22T14:02:57+00:00"
+        },
+        {
+            "name": "drewlabs/mdl-cli",
+            "version": "v0.2.20",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/azandrew-sidoine/mdl.git",
+                "reference": "b5598ed25ded1e115ebbbcf14c8b273e9b78cb54"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/azandrew-sidoine/mdl/zipball/b5598ed25ded1e115ebbbcf14c8b273e9b78cb54",
+                "reference": "b5598ed25ded1e115ebbbcf14c8b273e9b78cb54",
+                "shasum": ""
+            },
+            "require": {
+                "drewlabs/code-generator": "^0.2.4",
+                "ext-yaml": "*",
+                "php": ">=7.2"
+            },
+            "bin": [
+                "bin/mdl"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Drewlabs\\Mdl\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "azandrew-sidoine",
+                    "email": "asmyns.platonnas29@gmail.com"
+                }
+            ],
+            "description": "PHP script for generating classes, interface, mixin, ect... based on UML model written in YAML or JSON language",
+            "support": {
+                "issues": "https://github.com/azandrew-sidoine/mdl/issues",
+                "source": "https://github.com/azandrew-sidoine/mdl/tree/v0.2.20"
+            },
+            "time": "2023-04-18T13:04:23+00:00"
+        }
+    ],
+    "aliases": [],
+    "minimum-stability": "dev",
+    "stability-flags": [],
+    "prefer-stable": true,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.2.0"
+}
