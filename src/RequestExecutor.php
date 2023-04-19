@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Drewlabs\Htr;
 
+use Closure;
+use Drewlabs\Curl\REST\Client;
 use Drewlabs\Htr\Contracts\RequestInterface;
 use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Compilers\AuthorizationHeaderCompiler;
@@ -23,14 +25,20 @@ use Drewlabs\Htr\Compilers\RequestParamCompiler;
 use Drewlabs\Htr\Compilers\RequestURLCompiler;
 use Drewlabs\Htr\Contracts\BodyDescriptor;
 use Drewlabs\Htr\Contracts\Descriptor;
+use Drewlabs\Curl\REST\Contracts\ResponseInterface;
+use Drewlabs\Curl\REST\Response;
 
 class RequestExecutor
 {
-
     /**
      * @var RequestInterface
      */
     private $request;
+
+    /**
+     * @var Closure(string $method, string $url, array $headers, array $cookies):void
+     */
+    private $beforeRequest;
 
     /**
      * @var array<string,string>
@@ -39,8 +47,7 @@ class RequestExecutor
         'Content-Type' => 'application/json',
         'Accept' => '*/*',
         'Connection' => 'keep-alive',
-        'User-Agent' => 'Htr/v0.1.0',
-        'Accept-Encoding' => 'gzip, deflate, br'
+        'User-Agent' => 'HtrRuntime/v0.1.0'
     ];
 
 
@@ -58,11 +65,24 @@ class RequestExecutor
     }
 
     /**
+     * Set a callback to execute before sending request
+     * 
+     * @param Closure(string $method, string $url, array $headers, array $cookies):void $before 
+     * 
+     * @return self
+     */
+    public function before(\Closure $before)
+    {
+        $this->beforeRequest = $before;
+        return $this;
+    }
+
+    /**
      * Execute the request and return the execution result
      * 
      * @param RepositoryInterface $env
      *
-     * @return mixed
+     * @return Response&ResponseInterface
      */
     public function execute(RepositoryInterface $env)
     {
@@ -96,8 +116,19 @@ class RequestExecutor
         $cookies = array_merge(...$cookies);
         // #endregion Prepare request cookies
 
-        print_r([$url, $method, $headers, $params, $body, $cookies]);
         // TODO: Send the request and return response
+        if ($this->beforeRequest) {
+            ($this->beforeRequest)($method, $url, $headers, $cookies);
+        }
+        return Client::new([CURLOPT_USERAGENT => 'HtrRuntime/v0.1.0'])
+            ->prepareRequest([
+                'params' => $params,
+                'cookies' => $cookies,
+                'headers' => $headers
+            ])
+            ->setMethod($method)
+            ->setRequestURI($url)
+            ->sendRequest($body);
     }
 
     /**

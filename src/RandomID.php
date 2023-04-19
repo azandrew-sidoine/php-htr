@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Drewlabs\Htr;
 
 
-class RandRequestID
+class RandomID
 {
 
 	/**

@@ -8,6 +8,9 @@
         "Test",
         "YAML"
     ],
+    "bin": [
+        "bin/htr"
+    ],
     "autoload": {
         "psr-4": {
             "Drewlabs\\Htr\\": "src/"
@@ -25,6 +28,6 @@
         "drewlabs/mdl-cli": "^0.2.0"
     },
     "require": {
-        "drewlabs/curl-rest-client": "^0.2.3"
+        "drewlabs/curl-rest-client": "^0.2.6"
     }
 }

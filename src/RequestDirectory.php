@@ -49,7 +49,7 @@ final class RequestDirectory implements ComponentInterface, Arrayable
 		// #endregion Validate the request attributes
 
 		// #region Set the name property of the request
-		$attributes['name'] = $attributes['name'] ?? sprintf("request-%s", $attributes['id'] ?? RandRequestID::new()->__invoke());
+		$attributes['name'] = $attributes['name'] ?? sprintf("request-%s", $attributes['id'] ?? RandomID::new()->__invoke());
 		// #region Set the name property of the request
 
 		/**
@@ -57,7 +57,7 @@ final class RequestDirectory implements ComponentInterface, Arrayable
 		 */
 		$instance = (new static)
 			->setTests($attributes['tests'] ?? [])
-			->setId(isset($attributes['id']) ? $attributes['id'] : (isset($attributes['name']) ? Slug::new()->__invoke($attributes['name']) : RandRequestID::new()->__invoke()))
+			->setId(isset($attributes['id']) ? $attributes['id'] : (isset($attributes['name']) ? Slug::new()->__invoke($attributes['name']) : RandomID::new()->__invoke()))
 			->setName($attributes['name'])
 			->setDescription($attributes['description'] ?? '');
 
@@ -150,7 +150,7 @@ final class RequestDirectory implements ComponentInterface, Arrayable
 			if (!in_array($item['type'], ComponentTypes::VALUES)) {
 				throw new ConfigurationException('Unsupported item type, please make sure your item type attribute equals request|directory');
 			}
-			$item['id'] = $item['id'] ?? sprintf("%s.%s", isset($this->id) ? $this->id : (isset($this->name) ? Slug::new()->__invoke($this->name) : RandRequestID::new()->__invoke()), (isset($item['name']) ? Slug::new()->__invoke($item['name']) : RandRequestID::new()->__invoke()));
+			$item['id'] = $item['id'] ?? sprintf("%s.%s", isset($this->id) ? $this->id : (isset($this->name) ? Slug::new()->__invoke($this->name) : RandomID::new()->__invoke()), (isset($item['name']) ? Slug::new()->__invoke($item['name']) : RandomID::new()->__invoke()));
 			$item['tests'] = $item['tests'] ?? $this->tests;
 			return (new ComponentFactory)($item['type'], $item);
 		}, $items);

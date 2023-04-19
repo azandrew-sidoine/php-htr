@@ -39,10 +39,10 @@ class Test
 	/**
 	 * Evaluate the test logic and returns a test result
 	 * 
-	 * @param Closure|null $resolver 
+	 * @param Closure|callable|null $resolver 
 	 * @return bool 
 	 */
-	public function evaluate(\Closure $resolver = null)
+	public function evaluate($resolver = null)
 	{
 		$resolver = $resolver ?? function() {
 			// By default resolve null if no resolver is provided

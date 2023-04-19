@@ -37,16 +37,24 @@ class Project implements Arrayable
 	private $version = '0.1.0';
 
 	/**
+	 * 
+	 * @var string
+	 */
+	private $name;
+
+	/**
 	 * Create new class instance
 	 * 
 	 * @param array $components
+	 * @param string $name
 	 * @param string $version
 	 */
-	public function __construct(array $components, string $version = "0.1.0")
+	public function __construct(array $components, string $name, string $version = "0.1.0")
 	{
 		# code...
 		$this->components = $components;
-		$this->version = $version;
+		$this->name = $name;
+		$this->version = $version ?? '0.1.0';
 	}
 
 	/**
@@ -65,17 +73,18 @@ class Project implements Arrayable
 	 * 
 	 * @param array $env
 	 * @param array $components
+	 * @param string $name
 	 * @param string $version
 	 *
 	 * @return static
 	 */
-	public static function make(array $env, array $components, string $version = "0.1.0")
+	public static function make(array $env, array $components, string $name, string $version = "0.1.0")
 	{
 		// Configure the environent
 		EnvRepository::configure($env);
 
 		// Call the project constructor to instanciate the project
-		return new self(self::buildComponents($components), $version);
+		return new self(self::buildComponents($components), $name, $version);
 	}
 
 	/**
@@ -87,7 +96,7 @@ class Project implements Arrayable
 	 */
 	public static function fromAttributes(array $attributes = [])
 	{
-		return self::make($attributes['env'] ?? [], $attributes['components'] ?? [], $attributes['version']);
+		return self::make($attributes['env'] ?? [], $attributes['components'] ?? [], $attributes['name'] ?? 'HTr Request Runner', $attributes['version']);
 	}
 
 	/**
@@ -162,7 +171,19 @@ class Project implements Arrayable
 		# code...
 		return $this->version;
 	}
-	
+
+	/**
+	 * Get name property value
+	 * 
+	 *
+	 * @return string
+	 */
+	public function getName()
+	{
+		# code...
+		return $this->name;
+	}
+
 	/**
 	 * Returns the list of project request
 	 * 
@@ -172,7 +193,7 @@ class Project implements Arrayable
 	 */
 	public function getRequests(\Closure $factory = null)
 	{
-		$factory = $factory ?? function($value) {
+		$factory = $factory ?? function ($value) {
 			return $value;
 		};
 		$components = [];

@@ -40,13 +40,13 @@ class TestStatement
 	/**
 	 * Evaluate the statement logic and returns a result
 	 * 
-	 * @param Closure(string $key):mixed|null $resolver 
+	 * @param Closure(string $key):mixed|callable|null $resolver 
 	 * @return bool 
 	 * @throws RuntimeException 
 	 */
-	public function evaluate(\Closure $resolver = null)
+	public function evaluate($resolver = null)
 	{
-		$resolver = $resolver ?? function() {
+		$resolver = $resolver ?? function () {
 			// By default resolve null if no resolver is provided
 			return null;
 		};
@@ -59,17 +59,18 @@ class TestStatement
 	/**
 	 * Evaluate an expression and return the result
 	 * 
-	 * @param Closure(string $key):mixed $resolver 
+	 * @param Closure(string $key):mixed|callable $resolver 
 	 * @param string $left 
 	 * @param string|null $op 
 	 * @param string|null $right 
 	 * @return bool 
 	 * @throws RuntimeException 
 	 */
-	private function evaluateExpression(\Closure $resolver, string $left, string $op = null, string $right = null)
+	private function evaluateExpression($resolver, string $left, string $op = null, string $right = null)
 	{
 		// Resolve the left hand side of the expression
 		$left = (false !== strpos($left, '[')) && (false !== strpos($left, ']')) ? $resolver($left) : $left;
+		$right = (false !== strpos($right, '[')) && (false !== strpos($right, ']')) ? $resolver($right) : $right;
 
 		// Evalue truthy expression
 		if ($op === null && $right === null) {
@@ -106,6 +107,10 @@ class TestStatement
 			case 'gte':
 			case '>=':
 				return $left >= $right;
+			case 'in':
+				return false !== array_search($left, is_string($right) ? explode(', ', $right) : $right ?? []);
+			case 'has':
+				return '__UNKNOWN__' !== $this->arrayGet($left, $right, '__UNKNOWN__');
 			default:
 				throw new \RuntimeException("Unsupported operation " . strval($op));
 		}
@@ -120,9 +125,48 @@ class TestStatement
 	 */
 	public static function new(string $statement)
 	{
-		$values = array_map(function ($item) {
-			return trim($item);
-		}, explode(' ', trim($statement)));
-		return new self($values);
+		$component_1 = self::before(' ', $statement);
+		$component_2 = self::before(' ', trim(substr($statement, strlen($component_1))));
+		$component_3 = substr($statement, strlen($component_1 . ' ' . $component_2));
+		return new self([trim($component_1), trim($component_2), trim($component_3)]);
+	}
+
+	/**
+	 * Get the string before the specified $char
+	 * 
+	 * @param string $char 
+	 * @param string $haystack 
+	 * @return string 
+	 */
+	private static function before(string $char, string $haystack)
+	{
+        return false !== ($pos = strpos($haystack, $char)) ? substr($haystack, 0, $pos) : '';
+	}
+
+	/**
+	 * Search for a key in an array value
+	 * 
+	 * @param array $array 
+	 * @param string $name 
+	 * @return mixed 
+	 */
+	private function arrayGet(array $array, string $name, $default = null)
+	{
+		if (false !== strpos($name, '.')) {
+			$keys = explode('.', $name);
+			$count = count($keys);
+			$index = 0;
+			$current = $array;
+			while ($index < $count) {
+				# code...
+				if (null === $current) {
+					return null;
+				}
+				$current = array_key_exists($keys[$index], $current) ? $current[$keys[$index]] : $current[$keys[$index]] ?? null;
+				$index += 1;
+			}
+			return $current ?? $default;
+		}
+		return array_key_exists($name, $array ?? []) ? $array[$name] : $default;
 	}
 }

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Drewlabs\Htr\Testing;
 
+use Closure;
 use Drewlabs\Htr\Contracts\Arrayable;
 
 final class TestRunner implements Arrayable
@@ -74,17 +75,22 @@ final class TestRunner implements Arrayable
 		}
 		return true;
 	}
-
+	
 	/**
 	 * Executes the tests
 	 * 
-	 *
-	 * @return static
+	 * @param Closure|callable|null $resolver
+	 *  
+	 * @return self 
 	 */
-	public function execute()
+	public function execute($resolver = null)
 	{
+		$resolver = $resolver ?? function() {
+			// By default resolve null if no resolver is provided
+			return null;
+		};
 		foreach ($this->getTests() as $test) {
-			$this->results[$test->getTest()] = $test->evaluate();
+			$this->results[$test->getTest()] = $test->evaluate($resolver);
 		}
 		return $this;
 	}
@@ -140,5 +146,21 @@ final class TestRunner implements Arrayable
 	{
 		# code...
 		return $this->results;
+	}
+
+	/**
+	 * Returns the list of failed tests
+	 * 
+	 * @return array 
+	 */
+	public function getFailedTests()
+	{
+		$output = [];
+		foreach ($this->getResults() as $key => $result) {
+			if ($result === false) {
+				$output[] = $key;
+			}
+		}
+		return $output;
 	}
 }

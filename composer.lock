@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "89070fab04c1aa7dd4a1ea991506dd89",
+    "content-hash": "ea4e36dd150ccbdd047217ef8b29192e",
     "packages": [
         {
             "name": "drewlabs/curl-client",
@@ -57,16 +57,16 @@
         },
         {
             "name": "drewlabs/curl-rest-client",
-            "version": "v0.2.3",
+            "version": "v0.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/azandrew-sidoine/curl-rest-client.git",
-                "reference": "5fde26117c55e2bc515115c29ff61175695b858c"
+                "reference": "52bee5342b24e8d2a4354e033e5ba6e0a8885d2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azandrew-sidoine/curl-rest-client/zipball/5fde26117c55e2bc515115c29ff61175695b858c",
-                "reference": "5fde26117c55e2bc515115c29ff61175695b858c",
+                "url": "https://api.github.com/repos/azandrew-sidoine/curl-rest-client/zipball/52bee5342b24e8d2a4354e033e5ba6e0a8885d2c",
+                "reference": "52bee5342b24e8d2a4354e033e5ba6e0a8885d2c",
                 "shasum": ""
             },
             "require": {
@@ -95,9 +95,9 @@
             "description": "Built on top of curl client library, it offers REST supported HTTP verbs for sending request to backend service.",
             "support": {
                 "issues": "https://github.com/azandrew-sidoine/curl-rest-client/issues",
-                "source": "https://github.com/azandrew-sidoine/curl-rest-client/tree/v0.2.3"
+                "source": "https://github.com/azandrew-sidoine/curl-rest-client/tree/v0.2.6"
             },
-            "time": "2023-04-13T12:06:34+00:00"
+            "time": "2023-04-19T17:29:52+00:00"
         }
     ],
     "packages-dev": [

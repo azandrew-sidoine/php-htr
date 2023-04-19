@@ -96,7 +96,7 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface
 		// #endregion Create request headers
 
 		// #region Set the name property of the request
-		$attributes['name'] = $attributes['name'] ?? sprintf("request-%s", $attributes['id'] ?? RandRequestID::new()->__invoke());
+		$attributes['name'] = $attributes['name'] ?? sprintf("request-%s", $attributes['id'] ?? RandomID::new()->__invoke());
 		// #region Set the name property of the request
 
 		/**
@@ -104,7 +104,7 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface
 		 */
 		$instance = (new static)
 			->setMethod($attributes['method'] ?? 'GET')
-			->setId(isset($attributes['id']) ? $attributes['id'] : (isset($attributes['name']) ? Slug::new()->__invoke($attributes['name']) : RandRequestID::new()->__invoke()))
+			->setId(isset($attributes['id']) ? $attributes['id'] : (isset($attributes['name']) ? Slug::new()->__invoke($attributes['name']) : RandomID::new()->__invoke()))
 			->setUrl($attributes['url'])
 			->setHeaders($headers)
 			->setParams($params)
