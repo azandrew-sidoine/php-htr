@@ -13,6 +13,11 @@ declare(strict_types=1);
 
 namespace Drewlabs\Htr;
 
+use Drewlabs\Htr\Graph\DFS_Iterator;
+use Drewlabs\Htr\Graph\Graph;
+use Drewlabs\Htr\Graph\GraphNode;
+use Drewlabs\Htr\Graph\Node;
+
 class Executor
 {
     /**
@@ -44,9 +49,24 @@ class Executor
 
     public function execute()
     {
-
-        $request = $this->project->getRequests();
-        // Execute the request and handle tests
-
+        $results = [];
+        /**
+         * @var GraphNode[] $request
+         */
+        $requests = $this->project->getRequests(function (Request $request) {
+            return new GraphNode($request, $request->getId(), $request->getDependsOn());
+        });
+        $graph = Graph::new($requests);
+        foreach ($graph->getTopNodes() as $node) {
+            DFS_Iterator::new($graph)->__invoke($node, function (Node $node) use (&$results) {
+                // TODO: Execute the request and add response to the result key
+                /**
+                 * @var Request
+                 */
+                $request = $node->value();
+                $response = RequestExecutor::new($request)->execute($this->project->env());
+                // TODO : Test Request response and write to output
+            });
+        }
     }
 }

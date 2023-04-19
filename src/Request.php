@@ -18,8 +18,10 @@ use Drewlabs\Htr\Contracts\ComponentInterface;
 use Drewlabs\Htr\Contracts\Arrayable;
 use Drewlabs\Htr\Contracts\Descriptor;
 use Drewlabs\Htr\Testing\TestRunner;
+use Drewlabs\Htr\Contracts\BodyDescriptor;
+use Drewlabs\Htr\Contracts\RequestInterface;
 
-final class Request implements ComponentInterface, Arrayable
+final class Request implements ComponentInterface, Arrayable, RequestInterface
 {
 
 	use ComponentMixin;
@@ -60,6 +62,18 @@ final class Request implements ComponentInterface, Arrayable
 	 * @var TestRunner
 	 */
 	private $tests = null;
+
+	/**
+	 * Request on which the current request depends
+	 * 
+	 * @var string
+	 */
+	private $depends_on = null;
+
+	/**
+	 * @var array
+	 */
+	private $cookies = [];
 
 	/**
 	 * Creates instance from a list of attributes
@@ -105,10 +119,20 @@ final class Request implements ComponentInterface, Arrayable
 			$instance = $instance->setBody($attributes['body']);
 		}
 
+		if (isset($attributes['cookies']) && is_array($attributes['cookies'])) {
+			$instance = $instance->setCookies($attributes['cookies']);
+		}
+
 		// #region Request tests
 		$tests = isset($attributes['tests']) ? (is_array($attributes['tests']) ? $attributes['tests'] : $attributes['tests']) : ['[status] eq 200'];
 		$instance->setTests(TestRunner::new($tests));
 		// #endregion Request tests
+
+		// #region Set the request dependency graph
+		if (isset($attributes['depends_on']) && is_string($attributes['depends_on'])) {
+			$instance = $instance->setDependsOn($attributes['depends_on']);
+		}
+		// #endregion Set the request dependency graph
 
 		// Returns the constructor instance
 		return $instance;
@@ -126,18 +150,21 @@ final class Request implements ComponentInterface, Arrayable
 			'id' => $this->id,
 			'name' => $this->name,
 			'description' => $this->description,
+			'method' => $this->method,
 			'url' => $this->getUrl(),
 			'headers' => array_map(function (Arrayable $header) {
 				return $header->toArray();
 			}, $this->getHeaders()),
+			'cookies' => array_map(function (Arrayable $cookie) {
+				return $cookie->toArray();
+			}, $this->getCookies()),
 			'authorization' => $this->authorization ? $this->authorization->toArray() : null,
-			'params' => array_map(function (Arrayable $header) {
-				return $header->toArray();
+			'params' => array_map(function (Arrayable $param) {
+				return $param->toArray();
 			}, $this->getParams()),
 			'body' => array_map(function (Arrayable $header) {
 				return $header->toArray();
 			}, $this->getBody()),
-			'method' => $this->method,
 			'tests' => $this->tests->toArray()
 		];
 	}
@@ -245,7 +272,7 @@ final class Request implements ComponentInterface, Arrayable
 	 * Get headers property value
 	 * 
 	 *
-	 * @return array
+	 * @return Descriptor[]
 	 */
 	public function getHeaders()
 	{
@@ -257,7 +284,7 @@ final class Request implements ComponentInterface, Arrayable
 	 * Get authorization property value
 	 * 
 	 *
-	 * @return ContractsDescriptor
+	 * @return Descriptor
 	 */
 	public function getAuthorization()
 	{
@@ -269,7 +296,7 @@ final class Request implements ComponentInterface, Arrayable
 	 * Get params property value
 	 * 
 	 *
-	 * @return array
+	 * @return Descriptor[]
 	 */
 	public function getParams()
 	{
@@ -281,7 +308,7 @@ final class Request implements ComponentInterface, Arrayable
 	 * Get body property value
 	 * 
 	 *
-	 * @return array
+	 * @return BodyDescriptor[]
 	 */
 	public function getBody()
 	{
@@ -342,6 +369,62 @@ final class Request implements ComponentInterface, Arrayable
 	{
 		# code...
 		return $this->tests;
+	}
+
+	/**
+	 * Set depends_on property value
+	 * 
+	 * @param string $value
+	 *
+	 * @return self
+	 */
+	public function setDependsOn(string $value)
+	{
+		# code...
+		$this->depends_on = $value;
+
+		return $this;
+	}
+
+	/**
+	 * Get depends_on property value
+	 * 
+	 *
+	 * @return string
+	 */
+	public function getDependsOn()
+	{
+		# code...
+		return $this->depends_on;
+	}
+
+	/**
+	 * Set cookies property value
+	 * 
+	 * @param array $value
+	 *
+	 * @return self
+	 */
+	public function setCookies(array $value)
+	{
+		$value = $this->cleanDescriptorsValue($value);
+		Assert::assertIsArrayOfArray($value);
+		$this->cookies = array_map(function ($item) {
+			return RequestCookie::fromAttributes($item);
+		}, $value);
+		return $this;
+	}
+
+	/**
+	 * Get cookies property value
+	 * 
+	 *
+	 * @return array
+	 */
+	public function getCookies()
+	{
+		# code...
+		return $this->cookies;
 	}
 
 	/**

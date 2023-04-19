@@ -45,7 +45,7 @@ trait DescriptorTrait
 	{
 		# code...
 		$this->name = $value;
-		
+
 		return $this;
 	}
 
@@ -60,7 +60,7 @@ trait DescriptorTrait
 	{
 		# code...
 		$this->value = $value;
-		
+
 		return $this;
 	}
 
@@ -110,7 +110,7 @@ trait DescriptorTrait
 	 *
 	 * @return static
 	 */
-	public static function fromAttributes(array $attributes = [ ])
+	public static function fromAttributes(array $attributes = [])
 	{
 		self::validateAttributes($attributes);
 		return new self($attributes['name'], $attributes['value']);
@@ -129,5 +129,4 @@ trait DescriptorTrait
 			'value' => $this->value
 		];
 	}
-
 }

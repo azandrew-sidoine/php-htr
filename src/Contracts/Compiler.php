@@ -14,24 +14,16 @@ declare(strict_types=1);
 namespace Drewlabs\Htr\Contracts;
 
 
-interface RepositoryInterface
+interface Compiler
 {
 
 	/**
-	 * Get an element from the repository
+	 * Compile value and return the compiled result
 	 * 
-	 * @param string $key
-	 * @param mixed $default
+	 * @param mixed $value
 	 *
-	 * @return string|mixed
+	 * @return mixed
 	 */
-	public function get(string $key, $default = null);
-
-	/**
-	 * Returns the list of keys from the repository
-	 * 
-	 * @return string[] 
-	 */
-	public function keys();
+	public function compile($value);
 
 }

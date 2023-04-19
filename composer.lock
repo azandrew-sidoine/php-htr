@@ -4,8 +4,102 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f04f02af3c7aefecf5e5d6561a3179d",
-    "packages": [],
+    "content-hash": "89070fab04c1aa7dd4a1ea991506dd89",
+    "packages": [
+        {
+            "name": "drewlabs/curl-client",
+            "version": "v0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/azandrew-sidoine/drewlabs-curl-client.git",
+                "reference": "75dfc6efc5084b6ad6a61a48616cd95a2af21e1e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/azandrew-sidoine/drewlabs-curl-client/zipball/75dfc6efc5084b6ad6a61a48616cd95a2af21e1e",
+                "reference": "75dfc6efc5084b6ad6a61a48616cd95a2af21e1e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "donatj/mock-webserver": "^2.5",
+                "phpunit/phpunit": ">=6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Drewlabs\\Curl\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "azandrew-sidoine",
+                    "email": "asmyns.platonnas29@gmail.com"
+                }
+            ],
+            "description": "Provides a PHP class around PHP curl object and Psr18 client based on the curl library",
+            "keywords": [
+                "curl",
+                "http"
+            ],
+            "support": {
+                "issues": "https://github.com/azandrew-sidoine/drewlabs-curl-client/issues",
+                "source": "https://github.com/azandrew-sidoine/drewlabs-curl-client/tree/v0.3.0"
+            },
+            "time": "2023-03-28T12:20:14+00:00"
+        },
+        {
+            "name": "drewlabs/curl-rest-client",
+            "version": "v0.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/azandrew-sidoine/curl-rest-client.git",
+                "reference": "5fde26117c55e2bc515115c29ff61175695b858c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/azandrew-sidoine/curl-rest-client/zipball/5fde26117c55e2bc515115c29ff61175695b858c",
+                "reference": "5fde26117c55e2bc515115c29ff61175695b858c",
+                "shasum": ""
+            },
+            "require": {
+                "drewlabs/curl-client": "^0.3.0"
+            },
+            "require-dev": {
+                "donatj/mock-webserver": "^2.6",
+                "phpunit/phpunit": ">=6.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Drewlabs\\Curl\\REST\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "azandrew-sidoine",
+                    "email": "asmyns.platonnas29@gmail.com"
+                }
+            ],
+            "description": "Built on top of curl client library, it offers REST supported HTTP verbs for sending request to backend service.",
+            "support": {
+                "issues": "https://github.com/azandrew-sidoine/curl-rest-client/issues",
+                "source": "https://github.com/azandrew-sidoine/curl-rest-client/tree/v0.2.3"
+            },
+            "time": "2023-04-13T12:06:34+00:00"
+        }
+    ],
     "packages-dev": [
         {
             "name": "drewlabs/code-generator",

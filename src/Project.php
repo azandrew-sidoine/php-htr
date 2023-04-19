@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Drewlabs\Htr;
 
+use Closure;
 use Drewlabs\Htr\Contracts\Arrayable;
 use Drewlabs\Htr\Contracts\ComponentInterface;
 // use Drewlabs\Htr\Contracts\RepositoryInterface;
@@ -161,16 +162,21 @@ class Project implements Arrayable
 		# code...
 		return $this->version;
 	}
-
+	
 	/**
 	 * Returns the list of project request
 	 * 
-	 * @return array<Request> 
+	 * @param Closure(Request $request):Request|mixed|null $factory
+	 * 
+	 * @return array 
 	 */
-	public function getRequests()
+	public function getRequests(\Closure $factory = null)
 	{
+		$factory = $factory ?? function($value) {
+			return $value;
+		};
 		$components = [];
-		$this->getProjectRequests($this->getComponents(), $components);
+		$this->getProjectRequests($this->getComponents(), $components, $factory);
 		return $components;
 	}
 
@@ -178,18 +184,19 @@ class Project implements Arrayable
 	 * Set the list of project request
 	 * 
 	 * @param array $components 
-	 * @param mixed $output 
+	 * @param mixed $output
+	 * @param \Closure(Request $request):Request|mixed $factory = null
 	 * @return void 
 	 */
-	private function getProjectRequests(array $components, &$output)
+	private function getProjectRequests(array $components, &$output, \Closure $factory)
 	{
 		foreach ($components as $component) {
 			if ($component instanceof Request) {
-				$output[] = $component;
+				$output[] = $factory($component);
 				continue;
 			}
 			if ($component instanceof RequestDirectory) {
-				$this->getProjectRequests($component->getItems(), $output);
+				$this->getProjectRequests($component->getItems(), $output, $factory);
 			}
 		}
 	}
