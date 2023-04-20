@@ -86,17 +86,29 @@ function htr_cmd_options(array $args)
         } else if (preg_match('/^-+(.+)$/', $args[$index], $matches) === 1) {
             // match prefix - with next parameter
             if (preg_match('/^-+(.+)\=(.+)$/', $args[$index], $subMatches) === 1) {
-                $configs[$subMatches[1]] = $subMatches[2];
+                if (array_key_exists($subMatches[1], $configs)) {
+                    $configs[$subMatches[1]] = array_merge(is_array($configs[$subMatches[1]]) ? $configs[$subMatches[1]] : [$configs[$subMatches[1]]], [$subMatches[2]]);
+                } else {
+                    $configs[$subMatches[1]] = $subMatches[2];
+                }
             } else if (isset($args[$index + 1]) && preg_match('/^[^-\=]+$/', $args[$index + 1]) === 1) {
                 // have sub parameter
-                $configs[$matches[1]] = $args[$index + 1];
+                if (array_key_exists($matches[1], $configs)) {
+                    $configs[$matches[1]] = array_merge(is_array($configs[$matches[1]]) ? $configs[$matches[1]] : [$configs[$matches[1]]], [$args[$index + 1]]);
+                } else {
+                    $configs[$matches[1]] = $args[$index + 1];
+                }
                 $index++;
             } elseif (strpos($matches[0], '--') === false) {
                 for ($j = 0; $j < strlen($matches[1]); $j += 1) {
                     $configs[$matches[1][$j]] = true;
                 }
             } else if (isset($args[$index + 1]) && preg_match('/^[^-].+$/', $args[$index + 1]) === 1) {
-                $configs[$matches[1]] = $args[$index + 1];
+                if (array_key_exists($matches[1], $configs)) {
+                    $configs[$matches[1]] = array_merge(is_array($configs[$matches[1]]) ? $configs[$matches[1]] : [$configs[$matches[1]]], [$args[$index + 1]]);
+                } else {
+                    $configs[$matches[1]] = $args[$index + 1];
+                }
                 $index++;
             } else {
                 $configs[$matches[1]] = true;
@@ -163,27 +175,32 @@ function main(array $args = [])
     set_time_limit(0);
 
     // #region Create the output function
-    $then = isset($options['output']) ? function ($output) use ($options) {
+    $then = isset($options['output']) ? function ($output, array $failures = []) use ($options) {
         if (is_string($output)) {
             $directoryExists = is_dir(dirname(strval($options['output'])));
             $outpath =  $directoryExists ? $options['output'] : @htr_resolve_path(RandomID::new()->__invoke());
             if (!$directoryExists) {
                 // Log to the console, with file not exists error
-                echo Console::yellow("Cannot locate output path at " . (strval($options['output'])) . " Writing output to $outpath") . PHP_EOL;
+                echo Console::yellow("\nCannot locate output path at " . (strval($options['output'])) . " Writing output to $outpath") . PHP_EOL;
             }
+
+            // Write tests log file
             file_put_contents($outpath, $output);
-            echo Console::green(sprintf("Execution completed. Please see the complete request log located at %s for more info", $outpath)) . PHP_EOL;
+
+            // Complete the execution
+            echo (count($failures) !== 0 ? Console::normal(sprintf("\n\nExecution completed with some test errors. Check %s for more info", $outpath), null, 'red') : Console::normal(sprintf("\n\nExecution completed. Check %s for more info", $outpath), null, 'green')) . PHP_EOL;
         }
     } : function () {
-        echo Console::green(sprintf("Execution completed. Thanks for using the program")) . PHP_EOL;
+        echo Console::normal(sprintf("\n\nExecution completed. Thanks for using the program"), null, 'green') . PHP_EOL;
     };
     // #endregion Create the output function
-
     // We invoke Requests Test execution object to execute the requests
     $client = isset($options['verbose']) && boolval($options['verbose']) ? ProjectTests::new(Project::fromAttributes($attributes))->debug() : ProjectTests::new(Project::fromAttributes($attributes));
 
+    $requests = array_merge(isset($options['request']) ? (is_array($options['request']) ? $options['request'] : [$options['request']]) : [], isset($options['req']) ? (is_array($options['req']) ? $options['req'] : [$options['req']]) : []);
+    $directories = array_merge(isset($options['directory']) ? (is_array($options['directory']) ? $options['directory'] : [$options['directory']]) : [], isset($options['d']) ? (is_array($options['d']) ? $options['d'] : [$options['d']]) : []);
     // Execute the propject requests
-    $client->execute($then);
+    $client->setDirectories($directories)->setRequets($requests)->execute($then);
 }
 
 main(array_slice($argv ?? [], 1));

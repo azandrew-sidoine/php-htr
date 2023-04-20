@@ -66,14 +66,14 @@ class Console_Table
      *
      * @var array
      */
-    private $_headers = array();
+    private $_headers = [];
 
     /**
      * The data of the table.
      *
      * @var array
      */
-    private $_data = array();
+    private $_data = [];
 
     /**
      * The maximum number of columns in a row.
@@ -94,14 +94,14 @@ class Console_Table
      *
      * @var array
      */
-    private $_cell_lengths = array();
+    private $_cell_lengths = [];
 
     /**
      * Heights of the rows.
      *
      * @var array
      */
-    private $_row_heights = array();
+    private $_row_heights = [];
 
     /**
      * How many spaces to use to pad the table.
@@ -115,7 +115,7 @@ class Console_Table
      *
      * @var array
      */
-    private $_filters = array();
+    private $_filters = [];
 
     /**
      * Columns to calculate totals for.
@@ -129,7 +129,7 @@ class Console_Table
      *
      * @var array
      */
-    private $_col_align = array();
+    private $_col_align = [];
 
     /**
      * Default alignment of columns.
@@ -515,7 +515,7 @@ class Console_Table
 
         $this->addSeparator();
 
-        $totals = array();
+        $totals = [];
         foreach ($this->_data as $row) {
             if (is_array($row)) {
                 foreach ($this->_calculateTotals as $columnID) {
@@ -563,31 +563,33 @@ class Console_Table
             $this->_calculateRowHeight(-1, $this->_headers[0]);
         }
 
-        for ($i = 0; $i < $this->_max_rows; $i++) {
-            for ($j = 0; $j < $this->_max_cols; $j++) {
-                if (
-                    !isset($this->_data[$i][$j]) &&
-                    (!isset($this->_data[$i]) ||
-                        $this->_data[$i] !== CONSOLE_TABLE_HORIZONTAL_RULE)
-                ) {
-                    $this->_data[$i][$j] = '';
+        if (!empty($this->_data)) {
+            for ($i = 0; $i < $this->_max_rows; $i++) {
+                for ($j = 0; $j < $this->_max_cols; $j++) {
+                    if (
+                        !isset($this->_data[$i][$j]) &&
+                        (!isset($this->_data[$i]) ||
+                            $this->_data[$i] !== CONSOLE_TABLE_HORIZONTAL_RULE)
+                    ) {
+                        $this->_data[$i][$j] = '';
+                    }
+                }
+                $this->_calculateRowHeight($i, $this->_data[$i]);
+
+                if ($this->_data[$i] !== CONSOLE_TABLE_HORIZONTAL_RULE) {
+                    ksort($this->_data[$i]);
                 }
             }
-            $this->_calculateRowHeight($i, $this->_data[$i]);
 
-            if ($this->_data[$i] !== CONSOLE_TABLE_HORIZONTAL_RULE) {
-                ksort($this->_data[$i]);
+            $this->_splitMultilineRows();
+
+            // Update cell lengths.
+            for ($i = 0; $i < count($this->_headers); $i++) {
+                $this->_calculateCellLengths($this->_headers[$i]);
             }
-        }
-
-        $this->_splitMultilineRows();
-
-        // Update cell lengths.
-        for ($i = 0; $i < count($this->_headers); $i++) {
-            $this->_calculateCellLengths($this->_headers[$i]);
-        }
-        for ($i = 0; $i < $this->_max_rows; $i++) {
-            $this->_calculateCellLengths($this->_data[$i]);
+            for ($i = 0; $i < $this->_max_rows; $i++) {
+                $this->_calculateCellLengths($this->_data[$i]);
+            }
         }
 
         ksort($this->_data);
@@ -614,7 +616,7 @@ class Console_Table
                 $height = $this->_row_heights[$i + $row_height_offset[$s]];
                 if ($height > 1) {
                     // Split column data into one-liners.
-                    $split = array();
+                    $split = [];
                     for ($j = 0; $j < $this->_max_cols; $j++) {
                         $split[$j] = preg_split(
                             '/\r?\n|\r/',
@@ -622,7 +624,7 @@ class Console_Table
                         );
                     }
 
-                    $new_rows = array();
+                    $new_rows = [];
                     // Construct new 'virtual' rows - insert empty strings for
                     // columns that have less lines that the highest one.
                     for ($i2 = 0; $i2 < $height; $i2++) {
@@ -663,7 +665,7 @@ class Console_Table
         $vertical = $this->_border['vertical'];
         $separator = $this->_getSeparator();
 
-        $return = array();
+        $return = [];
         for ($i = 0; $i < count($this->_data); $i++) {
             if (is_array($this->_data[$i])) {
                 for ($j = 0; $j < count($this->_data[$i]); $j++) {
@@ -731,7 +733,7 @@ class Console_Table
         $horizontal = $this->_border['horizontal'];
         $intersection = $this->_border['intersection'];
 
-        $return = array();
+        $return = [];
         foreach ($this->_cell_lengths as $cl) {
             $return[] = str_repeat($horizontal, $cl);
         }

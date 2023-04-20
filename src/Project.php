@@ -18,6 +18,7 @@ use Drewlabs\Htr\Contracts\Arrayable;
 use Drewlabs\Htr\Contracts\ComponentInterface;
 // use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Exceptions\ConfigurationException;
+use Generator;
 
 class Project implements Arrayable
 {
@@ -202,22 +203,108 @@ class Project implements Arrayable
 	}
 
 	/**
-	 * Set the list of project request
+	 * Query for requests matching user provided list or requests
+	 * 
+	 * @param array $in 
+	 * @param Closure|null $factory 
+	 * @return array 
+	 */
+	public function getRequestIn($in = [], \Closure $factory = null)
+	{
+		$factory = $factory ?? function ($value) {
+			return $value;
+		};
+		$components = [];
+		$this->getProjectRequestsIn($this->getComponents(), $components, $factory, $in);
+		return $components;
+	}
+
+	/**
+	 * Query for requests in some given request directories
+	 * 
+	 * @param array $in 
+	 * @param Closure|null $factory 
+	 * @return array 
+	 */
+	public function getRequestWhereDirectoryIn(array $in, \Closure $factory = null)
+	{
+		$factory = $factory ?? function ($value) {
+			return $value;
+		};
+
+		// Get the list of requests in the directory
+		$components = [];
+		$directories = [];
+		$this->getDirectories($this->getComponents(), $in, $directories);
+		$this->getProjectRequests($directories, $components, $factory);
+		return $components;
+	}
+
+
+	/**
+	 * Set the list of project request where id or name in the provided array
 	 * 
 	 * @param array $components 
 	 * @param mixed $output
 	 * @param \Closure(Request $request):Request|mixed $factory = null
 	 * @return void 
 	 */
-	private function getProjectRequests(array $components, &$output, \Closure $factory)
+	private function getProjectRequestsIn(array $components, &$output, \Closure $factory, array $in)
 	{
 		foreach ($components as $component) {
+			// filters request using in query in case the in is provided
+			if ($component instanceof Request && (in_array($component->getId(), $in) || in_array($component->getName(), $in))) {
+				$output[] = $factory($component);
+				continue;
+			}
+			if ($component instanceof RequestDirectory) {
+				$this->getProjectRequestsIn($component->getItems(), $output, $factory, $in);
+			}
+		}
+	}
+
+	/**
+	 * Set the list of project request
+	 * 
+	 * @param array|\iterable|\Traversable $components 
+	 * @param mixed $output
+	 * @param \Closure(Request $request):Request|mixed $factory = null
+	 * @return void 
+	 */
+	private function getProjectRequests($components, &$output, \Closure $factory, $in = [])
+	{
+		foreach ($components as $component) {
+			// filters request using in query in case the in is provided
+			if (!empty($in) && $component instanceof Request && (in_array($component->getId(), $in) || in_array($component->getName(), $in))) {
+				$output[] = $factory($component);
+				continue;
+			}
 			if ($component instanceof Request) {
 				$output[] = $factory($component);
 				continue;
 			}
 			if ($component instanceof RequestDirectory) {
-				$this->getProjectRequests($component->getItems(), $output, $factory);
+				$this->getProjectRequests($component->getItems(), $output, $factory, $in);
+			}
+		}
+	}
+
+
+	/**
+	 * Get all the directories in the current project
+	 * 
+	 * @param array $components 
+	 * @param array $in
+	 * @return Generator<int, RequestDirectory, mixed, void> 
+	 */
+	private function getDirectories(array $components, array $in, &$output)
+	{
+		foreach ($components as $component) {
+			if ($component instanceof RequestDirectory) {
+				if ((in_array($component->getId(), $in) || in_array($component->getName(), $in))) {
+					$output[] = $component;
+				}
+				$this->getDirectories($component->getItems(), $in, $output);
 			}
 		}
 	}

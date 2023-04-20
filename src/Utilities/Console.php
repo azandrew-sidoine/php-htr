@@ -114,6 +114,29 @@ class Console
         return Console_Table::fromArray($headers, $data);
     }
 
+
+    /**
+     * Creates a progress bar instance for the console
+     * 
+     * @param string $format 
+     * @param mixed $bar 
+     * @param mixed $prefill 
+     * @param mixed $width 
+     * @param mixed $target_num 
+     * @param array $options 
+     * @return Console_ProgressBar 
+     */
+    public static function progressBar(
+        string $format,
+        string $bar,
+        string $prefill,
+        int $width,
+        float $target_num,
+        array $options = []
+    ) {
+        return new Console_ProgressBar($format, $bar, $prefill, $width, $target_num, $options);
+    }
+
     /**
      * Logs a string to console.
      * @param  string  $string        Input String
@@ -157,7 +180,7 @@ class Console
         if (isset(self::FOREGROUND_COLORS[$foreground_color])) {
             $colored_string .= "\033[" . self::FOREGROUND_COLORS[$foreground_color] . "m";
         } else {
-            die($foreground_color . ' not a valid color');
+            throw new \RuntimeException($foreground_color . ' not a valid color');
         }
 
         array_shift($args);
