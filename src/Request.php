@@ -20,6 +20,7 @@ use Drewlabs\Htr\Contracts\Descriptor;
 use Drewlabs\Htr\Testing\TestRunner;
 use Drewlabs\Htr\Contracts\BodyDescriptor;
 use Drewlabs\Htr\Contracts\RequestInterface;
+use Drewlabs\Htr\Utilities\Assert;
 
 final class Request implements ComponentInterface, Arrayable, RequestInterface
 {

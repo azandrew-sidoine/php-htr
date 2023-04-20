@@ -1,6 +1,6 @@
 <?php
 
-namespace Drewlabs\Htr;
+namespace Drewlabs\Htr\Utilities;
 
 /**
  * PHP Colored CLI
@@ -13,25 +13,25 @@ namespace Drewlabs\Htr;
  * Original colored CLI output script:
  * (C) Jesse Donat https://github.com/donatj
  * 
- * @method static void bold(string $string, ?bool $newline, ?string $background_color)
- * @method static void dim(string $string, ?bool $newline, ?string $background_color)
- * @method static void black(string $string, ?bool $newline, ?string $background_color)
- * @method static void dark_gray(string $string, ?bool $newline, ?string $background_color)
- * @method static void blue(string $string, ?bool $newline, ?string $background_color)
- * @method static void light_blue(string $string, ?bool $newline, ?string $background_color)
- * @method static void green(string $string, ?bool $newline, ?string $background_color)
- * @method static void light_green(string $string, ?bool $newline, ?string $background_color)
- * @method static void cyan(string $string, ?bool $newline, ?string $background_color)
- * @method static void light_cyan(string $string, ?bool $newline, ?string $background_color)
- * @method static void red(string $string, ?bool $newline, ?string $background_color)
- * @method static void light_red(string $string, ?bool $newline, ?string $background_color)
- * @method static void purple(string $string, ?bool $newline, ?string $background_color)
- * @method static void light_purple(string $string, ?bool $newline, ?string $background_color)
- * @method static void brown(string $string, ?bool $newline, ?string $background_color)
- * @method static void yellow(string $string, ?bool $newline, ?string $background_color)
- * @method static void light_gray(string $string, ?bool $newline, ?string $background_color)
- * @method static void white(string $string, ?bool $newline, ?string $background_color)
- * @method static void normal(string $string, ?bool $newline, ?string $background_color)
+ * @method static string bold(string $string, ?bool $newline, ?string $background_color)
+ * @method static string dim(string $string, ?bool $newline, ?string $background_color)
+ * @method static string black(string $string, ?bool $newline, ?string $background_color)
+ * @method static string dark_gray(string $string, ?bool $newline, ?string $background_color)
+ * @method static string blue(string $string, ?bool $newline, ?string $background_color)
+ * @method static string light_blue(string $string, ?bool $newline, ?string $background_color)
+ * @method static string green(string $string, ?bool $newline, ?string $background_color)
+ * @method static string light_green(string $string, ?bool $newline, ?string $background_color)
+ * @method static string cyan(string $string, ?bool $newline, ?string $background_color)
+ * @method static string light_cyan(string $string, ?bool $newline, ?string $background_color)
+ * @method static string red(string $string, ?bool $newline, ?string $background_color)
+ * @method static string light_red(string $string, ?bool $newline, ?string $background_color)
+ * @method static string purple(string $string, ?bool $newline, ?string $background_color)
+ * @method static string light_purple(string $string, ?bool $newline, ?string $background_color)
+ * @method static string brown(string $string, ?bool $newline, ?string $background_color)
+ * @method static string yellow(string $string, ?bool $newline, ?string $background_color)
+ * @method static string light_gray(string $string, ?bool $newline, ?string $background_color)
+ * @method static string white(string $string, ?bool $newline, ?string $background_color)
+ * @method static string normal(string $string, ?bool $newline, ?string $background_color)
  */
 class Console
 {
@@ -77,6 +77,42 @@ class Console
     );
 
     const EOF = "\n";
+
+    /**
+     * Creates and instance of Pear Console_Table.
+     *
+     * @param integer $align   Default alignment. One of
+     *                         CONSOLE_TABLE_ALIGN_LEFT,
+     *                         CONSOLE_TABLE_ALIGN_CENTER or
+     *                         CONSOLE_TABLE_ALIGN_RIGHT.
+     * @param string  $border  The character used for table borders or
+     *                         CONSOLE_TABLE_BORDER_ASCII.
+     * @param integer $padding How many spaces to use to pad the table.
+     * @param string  $charset A charset supported by the mbstring PHP
+     *                         extension.
+     */
+    public static function table(
+        $align = CONSOLE_TABLE_ALIGN_LEFT,
+        $border = CONSOLE_TABLE_BORDER_ASCII,
+        $padding = 1,
+        $charset = null
+    ) {
+        return new Console_Table($align, $border, $padding, $charset);
+    }
+
+    /**
+     * Creates Pear console table from array
+     * 
+     * @param array $headers 
+     * @param array $data 
+     * @return Console_Table 
+     */
+    public static function tableFrom(
+        array $headers,
+        array $data
+    ) {
+        return Console_Table::fromArray($headers, $data);
+    }
 
     /**
      * Logs a string to console.

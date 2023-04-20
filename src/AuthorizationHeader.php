@@ -16,6 +16,7 @@ namespace Drewlabs\Htr;
 use Drewlabs\Htr\Contracts\Descriptor;
 use Drewlabs\Htr\Concerns\DescriptorTrait;
 use Drewlabs\Htr\Contracts\Arrayable;
+use Drewlabs\Htr\Utilities\Assert;
 
 class AuthorizationHeader implements Descriptor, Arrayable
 {

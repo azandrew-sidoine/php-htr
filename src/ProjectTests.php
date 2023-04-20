@@ -13,10 +13,17 @@ declare(strict_types=1);
 
 namespace Drewlabs\Htr;
 
+use Drewlabs\Curl\REST\Contracts\ResponseInterface;
+use Drewlabs\Curl\REST\Exceptions\BadRequestException;
+use Drewlabs\Curl\REST\Exceptions\ClientException;
+use Drewlabs\Htr\Contracts\RequestInterface;
 use Drewlabs\Htr\Graph\DFS_Iterator;
 use Drewlabs\Htr\Graph\Graph;
 use Drewlabs\Htr\Graph\GraphNode;
 use Drewlabs\Htr\Graph\Node;
+use Drewlabs\Htr\Testing\TestRunner;
+use Drewlabs\Htr\Utilities\Console;
+use Drewlabs\Htr\Utilities\ResponseBodyToTable;
 
 class ProjectTests
 {
@@ -24,6 +31,11 @@ class ProjectTests
      * @var Project
      */
     private $project;
+
+    /**
+     * @var bool
+     */
+    private $verbose = false;
 
     /**
      * Creates class instance
@@ -47,98 +59,180 @@ class ProjectTests
         return new self($project);
     }
 
+
+    /**
+     * Execute the tests in debug mode. Execution in debug mode output request parameters
+     * and test result to the console for each request
+     * 
+     * @return self 
+     */
+    public function debug()
+    {
+        $this->verbose = true;
+        return $this;
+    }
+
     /**
      * Execute the project requests and output result to path
      * 
-     * @param string|\Closure $output_path
+     * @param string|\Closure $then
      * 
      * @return void 
      */
-    public function execute($output_path = null)
+    public function execute($then = null)
     {
         $responses = [];
         // Prepares the output headers
         $output = ['Project: ' . $this->project->getName(), 'Version: ' . $this->project->getVersion()];
-        /**
-         * @var GraphNode[] $request
-         */
-        $requests = $this->project->getRequests(function (Request $request) {
-            return new GraphNode($request, $request->getId(), $request->getDependsOn());
-        });
 
         // #region We create the request graph
-        $graph = Graph::new($requests);
+        $graph = Graph::new($this->project->getRequests(function (Request $request) {
+            return new GraphNode($request, $request->getId(), $request->getDependsOn());
+        }));
         // #endregion We create the request graph
 
         foreach ($graph->getTopNodes() as $node) {
             DFS_Iterator::new($graph)->__invoke($node, function (Node $node) use (&$responses, &$output) {
-                // TODO: Execute the request and add response to the result key
+                // #region Initialize output arrays
+                $testOutputs = [];
+                $responseOutputs = [];
+                $requestOutputs = [];
+                // #endregion Initialize output arrays
+
                 /**
                  * @var Request
                  */
                 $request = $node->value();
-                $request_outputs[] = '';
-                $request_outputs[] = "---------------------------------------";
-                $request_outputs[] = "REQUEST ID: " . $request->getId();
-                $request_outputs[] = "---------------------------------------";
-                $response = RequestExecutor::new($request)->before(function ($method, $url, $headers, $cookies) use (&$request_outputs) {
-                    // #region Write headers to outut
-                    $request_outputs[] = "/" . $method . " " . $url;
-                    $request_outputs[] = "Request Headers:";
-                    foreach ($headers as $key => $value) {
-                        $request_outputs[] = "\t\t" . trim($key) . ": " . (is_array($value) ? implode(', ', $value) : $value);
-                    }
-                    // #region Write headers to outut
-                })->execute($this->project->env());
+                $requestOutputs[] = '';
+                $requestOutputs[] = "---------------------------------------";
+                $requestOutputs[] = "REQUEST ID: " . $request->getId();
+                $requestOutputs[] = "---------------------------------------";
+                try {
+                    $response = RequestExecutor::new($request)->before(function ($method, $url, $headers, $cookies) use (&$requestOutputs) {
+                        // #region Write headers to outut
+                        $requestOutputs[] = "/" . $method . " " . $url;
+                        $requestOutputs[] = "Request Headers:";
+                        foreach ($headers as $key => $value) {
+                            $requestOutputs[] = "\t\t" . trim($key) . ": " . (is_array($value) ? implode(', ', $value) : $value);
+                        }
+                        // #region Write headers to outut
 
-                //#region Write request details to the console
-                echo implode(PHP_EOL, $request_outputs) . PHP_EOL;
-                //#endregion Write request details to the console
+                        // We write request parameters to the output before sending the request
+                        $this->log(implode(PHP_EOL, $requestOutputs) . PHP_EOL);
+                    })->execute($this->project->env());
 
-                // We add the response to the list of responses in order to use it value as to resolve placeholders
-                $responses[$request->getId()] = $response;
+                    // We add the response to the list of responses in order to use it value as to resolve placeholders
+                    $responses[$request->getId()] = $response;
 
-                // #region Add Response result to the request output
-                $response_outputs[] = '';
-                $response_outputs[] = "Response:";
-                $response_outputs[] = "Status: " . strval($response->getStatus());
-                $response_outputs[] = "Status Text: " . strval($response->getStatusText());
-                $response_outputs[] = "Response Headers:";
-                foreach ($response->getHeaders() as $key => $value) {
-                    $response_outputs[] = "\t\t" . trim($key) . ": " . (is_array($value) ? implode(', ', $value) : $value);
+                    // #region Add Response result to the request output
+                    $responseOutputs  = $this->appendResponse($response);
+                    // #endregion Add Response result to the request output
+
+                    $testOutputs = $this->executeTests($request, $response);
+                } catch (BadRequestException $e) {
+                    $response = $e->getResponse();
+                    // We add the response to the list of responses in order to use it value as to resolve placeholders
+                    $responses[$request->getId()] = $response;
+
+                    // #region Add Response result to the request output
+                    $responseOutputs  = $this->appendResponse($response);
+                    // #endregion Add Response result to the request output
+
+                    $testOutputs = $this->executeTests($request, $response);
+                } catch (ClientException $e) {
+                    $this->log(Console::normal('ERROR!', null, 'red') . PHP_EOL);
+                    $this->log(Console::red($e->getMessage(), null) . PHP_EOL);
+                    $responseOutputs = ['', 'ERROR!', $e->getMessage()];
                 }
-                // #endregion Add Response result to the request output
 
-                // #region Add Test result to the output
-                $testRunner = $request->getTests()->execute(TestValueResolver::new($response));
-                $test_outputs[] = '';
-                $test_outputs[] = 'Test Results:';
-                $testResult = ($testPasses = $testRunner->passes()) ? sprintf("%s", "OK (" . (count($testRunner->getResults())) . " Tests)") : "FAILS (" . (count($testRunner->getResults())) . " Tests , " . (count($testRunner->getFailedTests())) . " Failures)";
-
-                // #region Print Test result to the console
-                echo ($testPasses ? Console::normal($testResult, null, 'green') : Console::white($testResult, null, 'red')) . "\n";
-                // #endregion Print Test result to the console
-
-                $test_outputs[] = sprintf("\t%s", $testResult);
-                if (!$testRunner->passes()) {
-                    $test_outputs[] = "Here is the list of failed tests:";
-                    foreach ($testRunner->getFailedTests() as $failedTest) {
-                        $test_outputs[] = sprintf("- \t%s", $failedTest);
-                    }
-                }
-                // #endregion Add Test result to the output
-                // echo implode(PHP_EOL, array_merge($request_outputs, $test_outputs)) . PHP_EOL;
-                $output = array_merge($output, $request_outputs, $response_outputs, $test_outputs);
+                $output = array_merge($output, $requestOutputs, $responseOutputs, $testOutputs);
             });
         }
-        if (is_string($output_path)) {
-            $output_path = function ($output) use ($output_path) {
-                file_put_contents($output_path, $output);
+        if (is_string($then)) {
+            $then = function ($output) use ($then) {
+                file_put_contents($then, $output);
             };
         }
 
-        if (is_callable($output_path)) {
-            ($output_path)(implode(PHP_EOL, $output));
+        if (is_callable($then)) {
+            ($then)(implode(PHP_EOL, $output));
+        }
+    }
+
+    /**
+     * Run tests on the request response
+     * 
+     * @param RequestInterface $request 
+     * @param ResponseInterface $response 
+     * @return string[] 
+     */
+    private function executeTests(RequestInterface $request, ResponseInterface $response)
+    {
+        $testRunner = $request->getTests()->execute(TestValueResolver::new($response));
+        $outputs = $this->appendTestResult($testRunner, $formatted);
+        $outputs[] = '';
+        // We log the formatted test results to the output
+        $this->log($formatted);
+
+        // Returns the output to the method caller
+        return $outputs;
+    }
+
+    /**
+     * Append request response to the output string
+     * 
+     * @param ResponseInterface $response 
+     * @return string[] 
+     */
+    private function appendResponse(ResponseInterface $response)
+    {
+        $output[] = '';
+        $output[] = "Response:";
+        $output[] = "Status: " . strval($response->getStatus());
+        $output[] = "Status Text: " . strval($response->getStatusText());
+        $output[] = "Response Headers:";
+        foreach ($response->getHeaders() as $key => $value) {
+            $output[] = "\t\t" . trim($key) . ": " . (is_array($value) ? implode(', ', $value) : $value);
+        }
+        $output[] = PHP_EOL;
+        $output[] = "Response Body:";
+        $table = ResponseBodyToTable::new($response)->__invoke();
+        $output[] = $table;
+        return $output;
+    }
+
+    /**
+     * Appends test result to the output string
+     * 
+     * @param TestRunner $testRunner 
+     * @param string $output 
+     * @return string[]
+     */
+    public function appendTestResult(TestRunner $testRunner, &$formattedText)
+    {
+        $output = ["Test Results:"];
+        $testResult = ($testPasses = $testRunner->passes()) ? sprintf("%s", "OK (" . (count($testRunner->getResults())) . " Tests)") : "FAILS (" . (count($testRunner->getResults())) . " Tests , " . (count($testRunner->getFailedTests())) . " Failures)";
+        $output[] = sprintf("\t%s", $testResult);
+        if (!$testRunner->passes()) {
+            $output[] = "Here is the list of failed tests:";
+            foreach ($testRunner->getFailedTests() as $failedTest) {
+                $output[] = sprintf("- \t%s", $failedTest);
+            }
+        }
+        $formattedText = ($testPasses ? Console::normal($testResult, null, 'green') : Console::white($testResult, null, 'red')) . PHP_EOL;
+        return $output;
+    }
+
+    /**
+     * Log the string to the console
+     * 
+     * @param string $string 
+     * @return void 
+     */
+    private function log(string $string)
+    {
+        if ($this->verbose) {
+            echo $string;
         }
     }
 }

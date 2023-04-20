@@ -70,7 +70,7 @@ class Graph
     {
         // Build folders tree structure from a list of folders using the BFS algorithm
         // Group the folders by parent id in order to ease the search algorithm
-        $groups = Arr::group($this->nodes, function (Node $node) {
+        $groups = self::group($this->nodes, function (Node $node) {
             return $node->parent();
         });
 
@@ -91,5 +91,30 @@ class Graph
         return  array_values(array_map(function ($node) use ($map_func) {
             return $map_func($node);
         }, $this->getTopNodes()));
+    }
+    /**
+     * Group values using the provided closure or key
+     * 
+     * @param \Traversable|\iterable $values 
+     * @param string|\Closure $by 
+     * @return array 
+     */
+    public static function group($values, $by)
+    {
+        $func =  (!is_string($by) && is_callable($by)) ? $by : function ($value) use ($by) {
+            return is_array($value) ?  ($value[$by] ?? null) : (is_object($by) ? $value->{$by} : $value);
+        };
+        $outputs = [];
+        foreach ($values as $key => $value) {
+            $keys = $func($value, $key);
+            $keys = is_array($keys) ? $keys : [$keys];
+            foreach ($keys as $k) {
+                if (!array_key_exists($k, $outputs)) {
+                    $outputs[$k] = [];
+                }
+                $outputs[$k][] = $value;
+            }
+        }
+        return $outputs;
     }
 }

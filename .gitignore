@@ -1,3 +1,4 @@
 vendor/
 /*.yml
 .workspace
+.DS_Store

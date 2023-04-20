@@ -17,6 +17,7 @@ use Drewlabs\Htr\Concerns\ComponentMixin;
 use Drewlabs\Htr\Contracts\ComponentInterface;
 use Drewlabs\Htr\Contracts\Arrayable;
 use Drewlabs\Htr\Exceptions\ConfigurationException;
+use Drewlabs\Htr\Utilities\Assert;
 
 final class RequestDirectory implements ComponentInterface, Arrayable
 {
