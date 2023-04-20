@@ -24,9 +24,6 @@
     ],
     "prefer-stable": true,
     "minimum-stability": "dev",
-    "require-dev": {
-        "drewlabs/mdl-cli": "^0.2.0"
-    },
     "require": {
         "drewlabs/curl-rest-client": "^0.2.6"
     }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea4e36dd150ccbdd047217ef8b29192e",
+    "content-hash": "9237647928172279b995912c037ebe4f",
     "packages": [
         {
             "name": "drewlabs/curl-client",
@@ -57,16 +57,16 @@
         },
         {
             "name": "drewlabs/curl-rest-client",
-            "version": "v0.2.6",
+            "version": "v0.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/azandrew-sidoine/curl-rest-client.git",
-                "reference": "52bee5342b24e8d2a4354e033e5ba6e0a8885d2c"
+                "reference": "2c31780ac8398b34ec71248f41bc31bcf121009a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azandrew-sidoine/curl-rest-client/zipball/52bee5342b24e8d2a4354e033e5ba6e0a8885d2c",
-                "reference": "52bee5342b24e8d2a4354e033e5ba6e0a8885d2c",
+                "url": "https://api.github.com/repos/azandrew-sidoine/curl-rest-client/zipball/2c31780ac8398b34ec71248f41bc31bcf121009a",
+                "reference": "2c31780ac8398b34ec71248f41bc31bcf121009a",
                 "shasum": ""
             },
             "require": {
@@ -95,100 +95,12 @@
             "description": "Built on top of curl client library, it offers REST supported HTTP verbs for sending request to backend service.",
             "support": {
                 "issues": "https://github.com/azandrew-sidoine/curl-rest-client/issues",
-                "source": "https://github.com/azandrew-sidoine/curl-rest-client/tree/v0.2.6"
+                "source": "https://github.com/azandrew-sidoine/curl-rest-client/tree/v0.2.7"
             },
-            "time": "2023-04-19T17:29:52+00:00"
+            "time": "2023-04-20T07:42:08+00:00"
         }
     ],
-    "packages-dev": [
-        {
-            "name": "drewlabs/code-generator",
-            "version": "v0.2.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/azandrew-sidoine/drewlabs-php-code-generator.git",
-                "reference": "bc8b149346d3b448b6bd2556b9b5191294290857"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/azandrew-sidoine/drewlabs-php-code-generator/zipball/bc8b149346d3b448b6bd2556b9b5191294290857",
-                "reference": "bc8b149346d3b448b6bd2556b9b5191294290857",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "type": "library",
-            "autoload": {
-                "files": [
-                    "./src/proxies.php"
-                ],
-                "psr-4": {
-                    "Drewlabs\\CodeGenerator\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "azandrew-sidoine",
-                    "email": "asmyns.platonnas29@gmail.com"
-                }
-            ],
-            "description": "Simple utility classes for generating PHP classes, methods, properties and interfaces",
-            "support": {
-                "source": "https://github.com/azandrew-sidoine/drewlabs-php-code-generator/tree/v0.2.4"
-            },
-            "time": "2023-03-22T14:02:57+00:00"
-        },
-        {
-            "name": "drewlabs/mdl-cli",
-            "version": "v0.2.20",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/azandrew-sidoine/mdl.git",
-                "reference": "b5598ed25ded1e115ebbbcf14c8b273e9b78cb54"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/azandrew-sidoine/mdl/zipball/b5598ed25ded1e115ebbbcf14c8b273e9b78cb54",
-                "reference": "b5598ed25ded1e115ebbbcf14c8b273e9b78cb54",
-                "shasum": ""
-            },
-            "require": {
-                "drewlabs/code-generator": "^0.2.4",
-                "ext-yaml": "*",
-                "php": ">=7.2"
-            },
-            "bin": [
-                "bin/mdl"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Drewlabs\\Mdl\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "azandrew-sidoine",
-                    "email": "asmyns.platonnas29@gmail.com"
-                }
-            ],
-            "description": "PHP script for generating classes, interface, mixin, ect... based on UML model written in YAML or JSON language",
-            "support": {
-                "issues": "https://github.com/azandrew-sidoine/mdl/issues",
-                "source": "https://github.com/azandrew-sidoine/mdl/tree/v0.2.20"
-            },
-            "time": "2023-04-18T13:04:23+00:00"
-        }
-    ],
+    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": [],
