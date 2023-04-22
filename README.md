@@ -15,7 +15,10 @@ To install the library simply run the command below:
 > composer require drewlabs/htr
 ```
 
-## Configuration
+## Usage
+
+
+### Configuration
 
 `HTr` client application works with configuration files written in either `JSON (Javascript Object Notation)` format or `YAML` format. Below is a sample configuration file:
 
@@ -34,117 +37,113 @@ env:
 
 components:
   # The part below defines a request group or directory
-    -
-      name: "posts"
-      description: Defines post management REST interfaces"
-      items:
-        -
-          url: "[_host]/[_apiVersion]/posts"
-          method: "GET"
-          authorization:
-            name: "bearer"
-            value: "[_bearerToken]"
-          body:
-          params:
-            page: 1
-            per_page: 50
-          tests:
-            - "[status] eq 200" # Asser that request response status code == 200
-        - url: "[_host]/[_apiVersion]/post"
-          method: "POST"
-          authorization:
-            name: "bearer"
-            value: "[_bearerToken]"
-          body:
-            title: "Environments"
-            content: "This is an environment post"
-          tests:
-            - "[body].title eq Environment" #  Assert that request response body is has title field == Environments
-            - "[status] eq 200" # Assert that request must be completed with status code 200
-        - url: "[_host]/[_apiVersion]/post/:[_postId]"
-          method: "PUT"
-          authorization:
-            name: "bearer"
-            value: "[_bearerToken]"
-          body:
-          # Pass request body
-          tests:
-            - "[status] eq 422" # Assert that request response status code is 422
+  - name: "posts"
+    description: Defines post management REST interfaces"
+    items:
+      - url: "[_host]/[_apiVersion]/posts"
+        method: "GET"
+        authorization:
+          name: "bearer"
+          value: "[_bearerToken]"
+        body:
+        params:
+          page: 1
+          per_page: 50
+        tests:
+          - "[status] eq 200" # Asser that request response status code == 200
+      - url: "[_host]/[_apiVersion]/post"
+        method: "POST"
+        authorization:
+          name: "bearer"
+          value: "[_bearerToken]"
+        body:
+          title: "Environments"
+          content: "This is an environment post"
+        tests:
+          - "[body].title eq Environment" #  Assert that request response body is has title field == Environments
+          - "[status] eq 200" # Assert that request must be completed with status code 200
+      - url: "[_host]/[_apiVersion]/post/:[_postId]"
+        method: "PUT"
+        authorization:
+          name: "bearer"
+          value: "[_bearerToken]"
+        body:
+        # Pass request body
+        tests:
+          - "[status] eq 422" # Assert that request response status code is 422
 
-# Comments requests directory
-    -
-      name: "comments"
-      description: "Defines comments management REST interfaces"
-      items:
+  # Comments requests directory
+  - name: "comments"
+    description: "Defines comments management REST interfaces"
+    items:
       # Here we difines a request configuration that sends a POST request to http://127.0.0.1:12300/api/comments
-        -
-          url: "[_host]/[_apiVersion]/posts"
-          method: "GET"
-          authorization:
-            name: "bearer"
-            value: "[_bearerToken]"
-          # body:
-          params:
-            page: 1
-            per_page: 50
-          tests:
-            - "[status] eq 200" # Assert that request response status code == 200
-        - url: "[_host]/[_apiVersion]/comments"
-          method: "POST"
-          authorization:
-            name: "bearer"
-            value: "[_bearerToken]"
-          body:
-            post_id: "[_postId]"
-            content: "My Comment"
-          tests:
-            - "[status] eq 200" # Assert that request must be completed with status code 200
-        - url: "[_host]/[_apiVersion]/post/:[_commentId]"
-          method: "PUT"
-          authorization:
-            name: "bearer"
-            value: "[_bearerToken]"
-          body:
-          # Pass request body
-          tests:
-            - "[status] eq 422" # Assert that request response status code is 422
-
+      - url: "[_host]/[_apiVersion]/posts"
+        method: "GET"
+        authorization:
+          name: "bearer"
+          value: "[_bearerToken]"
+        # body:
+        params:
+          page: 1
+          per_page: 50
+        tests:
+          - "[status] eq 200" # Assert that request response status code == 200
+      - url: "[_host]/[_apiVersion]/comments"
+        method: "POST"
+        authorization:
+          name: "bearer"
+          value: "[_bearerToken]"
+        body:
+          post_id: "[_postId]"
+          content: "My Comment"
+        tests:
+          - "[status] eq 200" # Assert that request must be completed with status code 200
+      - url: "[_host]/[_apiVersion]/post/:[_commentId]"
+        method: "PUT"
+        authorization:
+          name: "bearer"
+          value: "[_bearerToken]"
+        body:
+        # Pass request body
+        tests:
+          - "[status] eq 422" # Assert that request response status code is 422
 ```
 
 **Note** Based on the configuration above requests can be customized using environment variables. Environment variables must be enclosed in `[variable]`.
 
-- Testing
-  Test assertion use a natural language to make it easy to write test. Below is the syntax to write test:
+### Testing
 
-  - `left op right` -> For simple assertions
-  - `left op righ and condition_2_left and condition_2_right` -> For composed assertions
+Test assertion use a natural language to make it easy to write test. Below is the syntax to write test:
 
-  Suported operator for testing are:
+- `left op right` -> For simple assertions
+- `left op righ and condition_2_left and condition_2_right` -> For composed assertions
 
-  - Logical operators
-    - `and` : For joining 2 or more conditions and return `true` only if all conditions return `true`
-    - `or` : For joining 2 o more condition and return `true` if one of the condittions is `true`
-  - Comparison operations
-    - `lt` or `>` : Stand for value `less than`
-    - `lte` or `<=` : For `less than or equals to comparison`
-    - `gt` or `>` : For `greater than comparison`
-    - `gte` or `>=` : For `greater than or equals to comparison`
-    - `eq` or `ne` : Respectively `equals` or `not equals`
-    - `has` : Check if an array has a given key or attribute
-    - `in` : Checks if a value exists in a list of value. Ex: `mango in banana,orange,pinneaple`
+Suported operator for testing are:
 
-  We use `[]` to denote properties of the response object:
+- Logical operators
+  - `and` : For joining 2 or more conditions and return `true` only if all conditions return `true`
+  - `or` : For joining 2 o more condition and return `true` if one of the condittions is `true`
+- Comparison operations
+  - `lt` or `>` : Stand for value `less than`
+  - `lte` or `<=` : For `less than or equals to comparison`
+  - `gt` or `>` : For `greater than comparison`
+  - `gte` or `>=` : For `greater than or equals to comparison`
+  - `eq` or `ne` : Respectively `equals` or `not equals`
+  - `has` : Check if an array has a given key or attribute
+  - `in` : Checks if a value exists in a list of value. Ex: `mango in banana,orange,pinneaple`
 
-  - `[status]` denote response status code
-  - `[body]` denote response body
-  - `[headers]` denote response headers.
+We use `[]` to denote properties of the response object:
 
-  To Access properties of response body, we use [body] concatenated with the property name using `.` symbol as follow;
+- `[status]` denote response status code
+- `[body]` denote response body
+- `[headers]` denote response headers.
 
-  - `[body].title` -> To access the title property of the response body
-  - `[body].address.email` -> Can be used for instance to access inner property of responser body object
+To Access properties of response body, we use [body] concatenated with the property name using `.` symbol as follow;
 
-## Usage
+- `[body].title` -> To access the title property of the response body
+- `[body].address.email` -> Can be used for instance to access inner property of responser body object
+
+### Command Line
 
 The library provides a command line interface for testing your HTTP REST Service based on a configuration file. Below is the command to run a basic test command using a configuration file located in the root of your project:
 
