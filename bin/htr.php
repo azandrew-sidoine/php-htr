@@ -168,7 +168,7 @@ function main(array $args = [])
     // Resolve the realpath to the path specified by the program user
     $path = @htr_resolve_path($path, __DIR__);
 
-    $attributes = isset($options['json']) ? @json_decode(file_get_contents($path)) : \yaml_parse(file_get_contents($path));
+    $attributes = isset($options['json']) && boolval($options['json'])  ? @json_decode(file_get_contents($path)) : \yaml_parse(file_get_contents($path));
 
     // Set the memory limit for the current script execution
     ini_set('memory_limit', '-1');
