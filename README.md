@@ -20,7 +20,6 @@ To install the library simply run the command below:
 `HTr` client application works with configuration files written in either `JSON (Javascript Object Notation)` format or `YAML` format. Below is a sample configuration file:
 
 ```yaml
-
 version: 0.1.0
 # $schema: http://json-schema.org/id/<SCHEMA_ID>
 name: BIOSECU ADMIN API TESTS
@@ -34,85 +33,81 @@ env:
   _commentId: 2
 
 components:
-	# The part below defines a request group or directory
-  	-
-   	  name: "posts"
-          description: Defines post management REST interfaces"
-          items:
-          	- 
-		  url: "[_host]/[_apiVersion]/posts"
-            	  method: "GET"
-                  authorization:
-              	    name: "bearer"
-                    value: "[_bearerToken]"
-            	  # body:
-                  params:
-                    page: 1
-                    per_page: 50
-                  tests:
-                    - "[status] eq 200" # Asser that request response status code == 200
-          	-
-		  url: "[_host]/[_apiVersion]/post"
-                  method: "POST"
-                  authorization:
-                    name: "bearer"
-                    value: "[_bearerToken]"
-                  body:
-              	    title: "Environments"
-		    content: "This is an environment post"
-                  tests:
-                    - "[body].title eq Environment" #  Assert that request response body is has title field == Environments
-		    - "[status] eq 200" # Assert that request must be completed with status code 200
-          	-
-		  url: "[_host]/[_apiVersion]/post/:[_postId]"
-                  method: "PUT"
-                  authorization:
-              	    name: "bearer"
-                    value: "[_bearerToken]"
-            	  body:
-                   # Pass request body
-                  tests:
-              	    - "[status] eq 422" # Assert that request response status code is 422
+  # The part below defines a request group or directory
+    -
+      name: "posts"
+      description: Defines post management REST interfaces"
+      items:
+        -
+          url: "[_host]/[_apiVersion]/posts"
+          method: "GET"
+          authorization:
+            name: "bearer"
+            value: "[_bearerToken]"
+          body:
+          params:
+            page: 1
+            per_page: 50
+          tests:
+            - "[status] eq 200" # Asser that request response status code == 200
+        - url: "[_host]/[_apiVersion]/post"
+          method: "POST"
+          authorization:
+            name: "bearer"
+            value: "[_bearerToken]"
+          body:
+            title: "Environments"
+            content: "This is an environment post"
+          tests:
+            - "[body].title eq Environment" #  Assert that request response body is has title field == Environments
+            - "[status] eq 200" # Assert that request must be completed with status code 200
+        - url: "[_host]/[_apiVersion]/post/:[_postId]"
+          method: "PUT"
+          authorization:
+            name: "bearer"
+            value: "[_bearerToken]"
+          body:
+          # Pass request body
+          tests:
+            - "[status] eq 422" # Assert that request response status code is 422
 
-	# Comments requests directory
-  	-
-   	  name: "comments"
-          description: "Defines comments management REST interfaces"
-          items:
-		# Here we difines a request configuration that sends a POST request to http://127.0.0.1:12300/api/comments
-          	- 
-		  url: "[_host]/[_apiVersion]/posts"
-            	  method: "GET"
-                  authorization:
-              	    name: "bearer"
-                    value: "[_bearerToken]"
-            	  # body:
-                  params:
-                    page: 1
-                    per_page: 50
-                  tests:
-                    - "[status] eq 200" # Assert that request response status code == 200
-          	-
-		  url: "[_host]/[_apiVersion]/comments"
-                  method: "POST"
-                  authorization:
-                    name: "bearer"
-                    value: "[_bearerToken]"
-                  body:
-		    post_id: "[_postId]"
-		    content: "My Comment"
-                  tests:
-		    - "[status] eq 200" # Assert that request must be completed with status code 200
-          	-
-		  url: "[_host]/[_apiVersion]/post/:[_commentId]"
-                  method: "PUT"
-                  authorization:
-              	    name: "bearer"
-                    value: "[_bearerToken]"
-            	  body:
-                   # Pass request body
-                  tests:
-              	    - "[status] eq 422" # Assert that request response status code is 422
+# Comments requests directory
+    -
+      name: "comments"
+      description: "Defines comments management REST interfaces"
+      items:
+      # Here we difines a request configuration that sends a POST request to http://127.0.0.1:12300/api/comments
+        -
+          url: "[_host]/[_apiVersion]/posts"
+          method: "GET"
+          authorization:
+            name: "bearer"
+            value: "[_bearerToken]"
+          # body:
+          params:
+            page: 1
+            per_page: 50
+          tests:
+            - "[status] eq 200" # Assert that request response status code == 200
+        - url: "[_host]/[_apiVersion]/comments"
+          method: "POST"
+          authorization:
+            name: "bearer"
+            value: "[_bearerToken]"
+          body:
+            post_id: "[_postId]"
+            content: "My Comment"
+          tests:
+            - "[status] eq 200" # Assert that request must be completed with status code 200
+        - url: "[_host]/[_apiVersion]/post/:[_commentId]"
+          method: "PUT"
+          authorization:
+            name: "bearer"
+            value: "[_bearerToken]"
+          body:
+          # Pass request body
+          tests:
+            - "[status] eq 422" # Assert that request response status code is 422
 
 ```
 
@@ -134,7 +129,7 @@ components:
     - `lte` or `<=` : For `less than or equals to comparison`
     - `gt` or `>` : For `greater than comparison`
     - `gte` or `>=` : For `greater than or equals to comparison`
-    - `eq` or `ne` : Respectively `equals` or  `not equals`
+    - `eq` or `ne` : Respectively `equals` or `not equals`
     - `has` : Check if an array has a given key or attribute
     - `in` : Checks if a value exists in a list of value. Ex: `mango in banana,orange,pinneaple`
 
@@ -167,12 +162,14 @@ The command above assune you have a file named `htr.yml` in the root of your pro
   ```
 
   Running the client application in debug mode allow developper ro see live running request with each request parameters output to the terminal.
+
 - Command output
   To override the output file name path were command logs are written simple use the `--output` flag as below:
 
   ```bash
   > ./vendor/bin/htr $(pwd)/htr.yml --output="$(pwd)/htr.log"
   ```
+
 - Request filtering
 
   Sometimes developper might want to execute specific requests or specific request directory components. For such cases, `HTr` provides developpers with `--request` or `--req` for filtering by request name or id.
