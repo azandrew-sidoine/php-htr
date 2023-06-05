@@ -174,6 +174,7 @@ function main(array $args = [])
     ini_set('memory_limit', '-1');
     set_time_limit(0);
 
+
     // #region Create the output function
     $then = isset($options['output']) ? function ($output, array $failures = []) use ($options) {
         if (is_string($output)) {
@@ -196,7 +197,7 @@ function main(array $args = [])
     // #endregion Create the output function
     // We invoke Requests Test execution object to execute the requests
     $client = isset($options['verbose']) && boolval($options['verbose']) ? ProjectTests::new(Project::fromAttributes($attributes))->debug() : ProjectTests::new(Project::fromAttributes($attributes));
-
+    
     $requests = array_merge(isset($options['request']) ? (is_array($options['request']) ? $options['request'] : [$options['request']]) : [], isset($options['req']) ? (is_array($options['req']) ? $options['req'] : [$options['req']]) : []);
     $directories = array_merge(isset($options['directory']) ? (is_array($options['directory']) ? $options['directory'] : [$options['directory']]) : [], isset($options['d']) ? (is_array($options['d']) ? $options['d'] : [$options['d']]) : []);
     // Execute the propject requests

@@ -153,7 +153,7 @@ class ProjectTests
         $bar = null;
         $index = 0;
         if (!$this->verbose) {
-            $bar = Console::progressBar('[%bar%] %percent%', 'O', ' ', 80, count($nodes), [
+            $bar = Console::progressBar('[%bar%] %percent%', '=>', ' ', 80, count($nodes), [
                 'ansi_terminal' => true,
                 'ansi_clear' => true,
             ]);

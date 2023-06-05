@@ -16,9 +16,13 @@ namespace Drewlabs\Htr;
 use Closure;
 use Drewlabs\Htr\Contracts\Arrayable;
 use Drewlabs\Htr\Contracts\ComponentInterface;
-// use Drewlabs\Htr\Contracts\RepositoryInterface;
+use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Exceptions\ConfigurationException;
+use Drewlabs\Htr\Utilities\JSONProjectCompiler;
+use Drewlabs\Htr\Utilities\YAMLProjectCompiler;
+use Exception;
 use Generator;
+use InvalidArgumentException;
 
 class Project implements Arrayable
 {
@@ -44,29 +48,46 @@ class Project implements Arrayable
 	private $name;
 
 	/**
+	 * 
+	 * @var string
+	 */
+	private $id;
+
+	/**
+	 * @var RepositoryInterface
+	 */
+	private $env;
+
+	/**
 	 * Create new class instance
 	 * 
-	 * @param array $components
-	 * @param string $name
-	 * @param string $version
+	 * @param array $components		List of project testable components
+	 * @param string $name			Project name
+	 * @param string $version		Project version property
+	 * @param string|null $id		Project id
 	 */
-	public function __construct(array $components, string $name, string $version = "0.1.0")
+	public function __construct(array $components, string $name, string $version = "0.1.0", string $id = null)
 	{
 		# code...
 		$this->components = $components;
 		$this->name = $name;
 		$this->version = $version ?? '0.1.0';
+		$this->id = $id ?? static::makeProjectId();
 	}
 
 	/**
-	 * Project environment repository
+	 * Project environment repository getter and setter
 	 * 
+	 * @param RepositoryInterface|null $env
 	 *
 	 * @return EnvRepository
 	 */
-	public static function env()
+	public function env(RepositoryInterface $env = null)
 	{
-		return EnvRepository::getInstance();
+		if (null !== $env) {
+			$this->env = $env;
+		}
+		return $this->env;
 	}
 
 	/**
@@ -81,11 +102,13 @@ class Project implements Arrayable
 	 */
 	public static function make(array $env, array $components, string $name, string $version = "0.1.0")
 	{
-		// Configure the environent
-		EnvRepository::configure($env);
-
 		// Call the project constructor to instanciate the project
-		return new self(self::buildComponents($components), $name, $version);
+		$object = new self(self::buildComponents($components), $name, $version, static::makeProjectId());
+
+		// Configure project environment
+		$object->env(EnvRepository::make($env));
+
+		return $object;
 	}
 
 	/**
@@ -97,25 +120,47 @@ class Project implements Arrayable
 	 */
 	public static function fromAttributes(array $attributes = [])
 	{
-		return self::make($attributes['env'] ?? [], $attributes['components'] ?? [], $attributes['name'] ?? 'HTr Request Runner', $attributes['version']);
+		return self::make($attributes['env'] ?? [], $attributes['components'] ?? [], $attributes['name'] ?? 'HTr project', $attributes['version']);
+	}
+
+	/**
+	 * Compile an `HTr` porject instance into 
+	 * 
+	 * @param string $format 
+	 * @return string 
+	 * @throws InvalidArgumentException 
+	 */
+	public function compile(string $format = 'yml')
+	{
+		// Compile the project instance
+		switch (strtolower($format)) {
+			case 'yml':
+			case 'yaml':
+				return  YAMLProjectCompiler::new()->compile($this);
+			case 'json':
+				return  JSONProjectCompiler::new()->compile($this);
+			default:
+				return  YAMLProjectCompiler::new()->compile($this);
+		}
 	}
 
 	/**
 	 * Returns the dictionnary representation of the component
-	 * 
 	 *
 	 * @return array
 	 */
 	public function toArray()
 	{
 		return [
+			'project' => $this->id,
+			'name' => $this->getName() ?? 'HTr Project',
 			'version' => $this->version,
-			'components' => array_map(function (Arrayable $component) {
-				return $component->toArray();
-			}, $this->components ?? []),
 			'env' => array_map(function (Arrayable $component) {
 				return $component->toArray();
 			}, $this->env()->values()),
+			'components' => array_map(function (Arrayable $component) {
+				return $component->toArray();
+			}, $this->components ?? []),
 		];
 	}
 
@@ -330,5 +375,26 @@ class Project implements Arrayable
 			}
 			return (new ComponentFactory)($component['type'], $component);
 		}, $components);
+	}
+
+	/**
+	 * Generates a fake uuid value for the project
+	 * 
+	 * @return string 
+	 * @throws Exception 
+	 */
+	private static function makeProjectId()
+	{
+		return sprintf(
+			'%04X%04X-%04X-%04X-%04X-%04X%04X%04X',
+			random_int(0, 65535),
+			random_int(0, 65535),
+			random_int(0, 65535),
+			random_int(16384, 20479),
+			random_int(32768, 49151),
+			random_int(0, 65535),
+			random_int(0, 65535),
+			random_int(0, 65535)
+		);
 	}
 }

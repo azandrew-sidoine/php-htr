@@ -20,13 +20,6 @@ final class EnvRepository implements RepositoryInterface
 {
 
 	/**
-	 * Repository instance
-	 * 
-	 * @var static
-	 */
-	private static $instance = null;
-
-	/**
 	 * Repository values
 	 * 
 	 * @var array<string,Env>
@@ -42,16 +35,13 @@ final class EnvRepository implements RepositoryInterface
 	}
 
 	/**
-	 * Returns the repository singleton instance
+	 * Creates a new the repository instance
 	 *
 	 * @return static
 	 */
-	public static function getInstance()
+	public static function new()
 	{
-		if (self::$instance === null) {
-			self::$instance = new self;
-		}
-		return self::$instance;
+		return new self;
 	}
 	
 	/**
@@ -60,10 +50,14 @@ final class EnvRepository implements RepositoryInterface
 	 * @param array $attributes 
 	 * @return static 
 	 */
-	public static function configure(array $attributes)
+	public static function make(array $attributes = [])
 	{
-		$instance = self::getInstance();
+		$instance = self::new();
 		foreach ($attributes as $key => $value) {
+			if ($value instanceof Descriptor) {
+				$instance->values[$value->getName()] = $value;
+				continue;
+			}
 			$value = is_array($value) ? $value : ['name' => $key, 'value' => $value];
 			$env = Env::fromAttributes($value);
 			$instance->values[$env->getName()] = $env;
@@ -80,7 +74,7 @@ final class EnvRepository implements RepositoryInterface
 	 *
 	 * @return string|mixed
 	 */
-	public function get(string $key, $default = null)
+	public function get(string $key = null, $default = null)
 	{
 		$value = $this->values[$key] ?? null;
 		return $value ? $value->getValue() : $default ?? null;
@@ -93,7 +87,7 @@ final class EnvRepository implements RepositoryInterface
 	 */
 	public function keys()
 	{
-		return array_keys(self::getInstance()->values);
+		return array_keys($this->values);
 	}
 
 	/**
@@ -103,7 +97,7 @@ final class EnvRepository implements RepositoryInterface
 	 */
 	public function values()
 	{
-		return array_values(self::getInstance()->values);
+		return array_values($this->values);
 	}
 
 	/**
@@ -113,7 +107,7 @@ final class EnvRepository implements RepositoryInterface
 	 */
 	public function getIterator()
 	{
-		foreach (self::getInstance()->values as $value) {
+		foreach ($this->values as $value) {
 			yield $value;
 		}
 	}

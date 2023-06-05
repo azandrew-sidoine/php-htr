@@ -26,5 +26,9 @@
     "minimum-stability": "dev",
     "require": {
         "drewlabs/curl-rest-client": "^0.2.6"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
     }
 }

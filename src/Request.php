@@ -147,7 +147,7 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface
 	 */
 	public function toArray()
 	{
-		return [
+		$array =  [
 			'id' => $this->id,
 			'name' => $this->name,
 			'description' => $this->description,
@@ -159,7 +159,6 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface
 			'cookies' => array_map(function (Arrayable $cookie) {
 				return $cookie->toArray();
 			}, $this->getCookies()),
-			'authorization' => $this->authorization ? $this->authorization->toArray() : null,
 			'params' => array_map(function (Arrayable $param) {
 				return $param->toArray();
 			}, $this->getParams()),
@@ -168,6 +167,11 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface
 			}, $this->getBody()),
 			'tests' => $this->tests->toArray()
 		];
+
+		if ($this->authorization) {
+			$array['authorization'] = $this->authorization->toArray();
+		}
+		return $array;
 	}
 
 	/**

@@ -11,7 +11,7 @@ trait ParsesValueTemplate
      * @param RepositoryInterface $repository 
      * @param string $key
      * 
-     * @return string 
+     * @return string
      */
     public static function parseValue(RepositoryInterface $repository, string $key)
     {
