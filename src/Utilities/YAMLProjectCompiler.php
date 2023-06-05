@@ -62,6 +62,6 @@ class YAMLProjectCompiler
     #[\ReturnTypeWillChange]
     public function compile(Arrayable $project)
     {
-        return \yaml_emit($project->toArray(), $this->encoding, $this->linebreak);
+        return preg_replace("/([-]{3}\n)|([.]{3}\n)/", '', \yaml_emit($project->toArray(), $this->encoding, $this->linebreak));
     }
 }
