@@ -25,10 +25,19 @@
     "prefer-stable": true,
     "minimum-stability": "dev",
     "require": {
+        "ext-json": "*",
         "drewlabs/curl-rest-client": "^0.2.6"
     },
     "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "composer/package-versions-deprecated": true
+        },
         "optimize-autoloader": true,
-        "sort-packages": true
+        "sort-packages": true,
+        "process-timeout": 0
+    },
+    "suggest": {
+        "ext-yaml": "required to parse and generate yaml documents"
     }
 }

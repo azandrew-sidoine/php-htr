@@ -130,7 +130,7 @@ class Project implements Arrayable
 	 * @return string 
 	 * @throws InvalidArgumentException 
 	 */
-	public function compile(string $format = 'yml')
+	public function compile(string $format = 'json')
 	{
 		// Compile the project instance
 		switch (strtolower($format)) {
@@ -140,7 +140,7 @@ class Project implements Arrayable
 			case 'json':
 				return  JSONProjectCompiler::new()->compile($this);
 			default:
-				return  YAMLProjectCompiler::new()->compile($this);
+				return  JSONProjectCompiler::new()->compile($this);
 		}
 	}
 

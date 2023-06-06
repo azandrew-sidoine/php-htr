@@ -57,16 +57,16 @@
         },
         {
             "name": "drewlabs/curl-rest-client",
-            "version": "v0.2.7",
+            "version": "v0.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/azandrew-sidoine/curl-rest-client.git",
-                "reference": "2c31780ac8398b34ec71248f41bc31bcf121009a"
+                "reference": "d0d92ccee5b8d5e9ca72dd25f0aa4cadc53aa143"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azandrew-sidoine/curl-rest-client/zipball/2c31780ac8398b34ec71248f41bc31bcf121009a",
-                "reference": "2c31780ac8398b34ec71248f41bc31bcf121009a",
+                "url": "https://api.github.com/repos/azandrew-sidoine/curl-rest-client/zipball/d0d92ccee5b8d5e9ca72dd25f0aa4cadc53aa143",
+                "reference": "d0d92ccee5b8d5e9ca72dd25f0aa4cadc53aa143",
                 "shasum": ""
             },
             "require": {
@@ -95,9 +95,9 @@
             "description": "Built on top of curl client library, it offers REST supported HTTP verbs for sending request to backend service.",
             "support": {
                 "issues": "https://github.com/azandrew-sidoine/curl-rest-client/issues",
-                "source": "https://github.com/azandrew-sidoine/curl-rest-client/tree/v0.2.7"
+                "source": "https://github.com/azandrew-sidoine/curl-rest-client/tree/v0.2.8"
             },
-            "time": "2023-04-20T07:42:08+00:00"
+            "time": "2023-04-23T14:13:15+00:00"
         }
     ],
     "packages-dev": [],
@@ -108,5 +108,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
