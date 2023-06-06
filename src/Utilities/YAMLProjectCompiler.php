@@ -29,18 +29,18 @@ class YAMLProjectCompiler
      */
     private $linebreak;
 
-    // /**
-    //  * Creates project compiler instance
-    //  * 
-    //  * @param int $encoding 
-    //  * @param int $linebreak 
-    //  * @return void 
-    //  */
-    // public function __construct(int $encoding = YAML_ANY_ENCODING, int $linebreak = YAML_ANY_BREAK)
-    // {
-    //     $this->encoding = $encoding;
-    //     $this->linebreak = $linebreak;
-    // }
+    /**
+     * Creates project compiler instance
+     * 
+     * @param int $encoding 
+     * @param int $linebreak 
+     * @return void 
+     */
+    public function __construct(int $encoding = YAML_ANY_ENCODING, int $linebreak = YAML_ANY_BREAK)
+    {
+        $this->encoding = $encoding;
+        $this->linebreak = $linebreak;
+    }
 
 
     /**
