@@ -5,8 +5,9 @@
     "license": "MIT",
     "keywords": [
         "HTTP",
-        "Test",
-        "YAML"
+        "Test Runner",
+        "YAML",
+        "JSON"
     ],
     "bin": [
         "bin/htr"
