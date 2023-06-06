@@ -153,13 +153,12 @@ class ProjectTests
         $bar = null;
         $index = 0;
         if (!$this->verbose) {
-            $bar = Console::progressBar('[%bar%] %percent%', '=>', ' ', 80, count($nodes), [
+            $bar = Console::progressBar('Testing... [%bar%] %percent%', '#', ' ', 80, count($nodes), [
                 'ansi_terminal' => true,
                 'ansi_clear' => true,
             ]);
         }
         // #endregion create the progress bar
-        echo Console::blue('Executing project requests, please wait...') . PHP_EOL;
 
         foreach ($graph->getTopNodes() as $node) {
             DFS_Iterator::new($graph)->__invoke($node, function (Node $node) use (&$responses, &$output, &$failures, &$index, $bar) {
