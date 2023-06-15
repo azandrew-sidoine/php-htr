@@ -1,0 +1,90 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "description": "HTr Project name",
+            "type": "string"
+        },
+        "id": {
+            "type": "string",
+            "description": "HTr Project version number"
+        },
+        "title": {
+            "type": "string",
+            "description": "HTr Project title"
+        },
+        "description": {
+            "type": "string",
+            "description": "HTr Project description"
+        },
+        "env": {
+            "description": "HTr project environment variables. Environment variables are will replace `[env_var]` string value at runtime when the Test runner is executed",
+            "type": "object"
+        },
+        "components": {
+            "description": "HTr components are request directories and requests object that are executed againt the endpoit API.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "description": "HTr component name provides an identifier for the component and allow test runner to filter request based on their name",
+                        "type": "string"
+                    },
+                    "description": {
+                        "description": "Provides a description to the HTr component.",
+                        "type": "string"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "url": {
+                                    "description": "Link or request path to the we resource against which the test is executed",
+                                    "type": "string"
+                                },
+                                "method": {
+                                    "description": "HTTP verb used when sending request to the resource server",
+                                    "type": "string"
+                                },
+                                "authorization": {
+                                    "description": "Provides authorization header used when sending request to resource server. It support authorization headers like bearer token, Basic auth, etc...",
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "description": "Provides request authorization header name",
+                                            "type": "string"
+                                        },
+                                        "value": {
+                                            "description": "Provides request authorization header value",
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": ["name", "value"]
+                                },
+                                "body": {
+                                    "description": "body parameter allow you to specify POST or PUT reques body send though the HTTP request",
+                                    "type": "object"
+                                },
+                                "params": {
+                                    "description": "Provides request query parameters to the test runner",
+                                    "type": "object"
+                                },
+                                "tests": {
+                                    "description": "Test runs by the test runner for the current request",
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "required": ["url", "method", "tests"]
+            }
+        }
+    },
+    "required": ["name", "env", "components"]
+}
