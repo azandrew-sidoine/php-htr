@@ -65,13 +65,20 @@ class ResponseBodyToTable
     private function arrayToTable(array $array, array &$output, string $prefix = '')
     {
         $index = 0;
+
+        // Drop from execution context for empty object 
+        if (empty($array)) {
+            return $index;
+        }
+
+        // For each value in the array append formatted output to $output array
         foreach ($array as $key => $value) {
             $index++;
             if ($index > self::MAX_OUTPUT_FIELDS) {
                 break;
             }
             if (is_array($value) && array_filter($value, 'is_array') === $value) {
-                $output[] = ['column' => !empty($prefix) ? "$prefix" ."[$key]" : $key, 'value' =>  sprintf("[ %s, ... ]", $this->arrayToRows(array_values($value)[0]))];
+                $output[] = ['column' => !empty($prefix) ? "$prefix" ."[$key]" : $key, 'value' =>  sprintf("[ %s, ... ]", $this->arrayToRows(array_values($value)[0] ?? []))];
                 continue;
             }
             if (is_array($value)) {

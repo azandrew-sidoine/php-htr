@@ -11,12 +11,48 @@ if (!defined('HTr_MAX_ARGV')) {
 if (!defined('HTR_SUPPORTED_EXTENSION')) {
     define('HTR_SUPPORTED_EXTENSION', ['json', 'yaml']);
 }
+
+if (!defined('HTR_VERSION')) {
+    define('HTR_VERSION', '0.2.2');
+}
 // #endregion Define the total supported options argument list
 
 use Drewlabs\Htr\Utilities\Console;
 use Drewlabs\Htr\Project;
 use Drewlabs\Htr\ProjectTests;
 use Drewlabs\Htr\RandomID;
+
+
+/**
+ * HTr usage help message
+ * 
+ * @param string $version 
+ * @return string 
+ */
+function htr_help_function(string $version = '0.2.0')
+{
+    $message = <<<EOT
+    A fast and simple HTTP request Test runner
+    
+    USAGE:
+        ./vendor/bin/htr <PATH> [OPTIONS]
+    
+    FLAGS:
+        -h, --help
+            Prints help information
+    
+    OPTIONS:
+        --verbose           Execute script in debug mode printing every execution stack to the console
+        --output            Path to test logs
+        --req               List of requests to execute in the configuration file
+        --directory         List of request directories to execute
+        --json              Tells HTr to parse json formatted input file. Default: YAML
+        --env               Pass environemnt variable to the script. Environment variable passed to the script will override variables from input file. (Ex: --env=_var:value)
+
+
+EOT;
+    return $message;
+}
 
 // #region IO
 /**
@@ -137,6 +173,23 @@ function htr_cmd_arguments(array $args)
         return substr($arg, 0, 1) !== '-' && substr($arg, 0, 2) !== '--';
     }));
 }
+
+/**
+ * Prepare environment passed through command line
+ * 
+ * @param array $values 
+ * @return array 
+ */
+function htr_prepare_env(array $values)
+{
+    $output = [];
+
+    foreach ($values as $value) {
+        list($k, $v) = explode(':', $value);
+        $output[$k] = $v;
+    }
+    return $output;
+}
 // #endregion Command line utilities
 
 //#region Tests runner
@@ -173,6 +226,16 @@ function htr_run_tests(string $inputPath, array $options, string $outputPath = n
     $path = @htr_resolve_path($inputPath, __DIR__);
 
     $attributes = isset($options['json']) && boolval($options['json'])  ? @json_decode(file_get_contents($path), true) : \yaml_parse(file_get_contents($path));
+
+    if (!is_array($attributes) || empty($attributes) ) {
+        echo Console::white(sprintf("Failed to parse configuration file located at %s", $inputPath), null, 'red') . PHP_EOL . PHP_EOL;
+        return;
+    }
+
+    // We merge any environment variable passed in as parameter with values from console
+    if (isset($options['env'])) {
+        $attributes['env'] =  array_merge($attributes['env'] ?? [], htr_prepare_env(is_array($envParam = $options['env'] ?? []) ? $envParam : [$envParam]));
+    }
 
     // #region Create the output function
     $then = $outputPath ? function ($output, array $failures = []) use ($outputPath) {
@@ -261,8 +324,13 @@ function main(array $args = [])
     $options = htr_cmd_options($optionsArgs);
     // #endregion Load command line arguments and options
 
+    if (isset($options['help'])) {
+        echo htr_help_function(HTR_VERSION);
+        return;
+    }
+
     if (null === $path) {
-        echo Console::normal("Program requires path to the configuration file", null, 'red') . PHP_EOL;
+        echo htr_help_function(HTR_VERSION);
         return;
     }
 
