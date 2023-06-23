@@ -30,20 +30,26 @@ final class BodyPart implements BodyDescriptor, Arrayable
 	private $type = 'text';
 
 	/**
+	 * @var bool
+	 */
+	private $required;
+
+	/**
 	 * Create new class instance
 	 * 
 	 * @param string $name
 	 * @param string|mixed $value
 	 * @param string $type
+	 * @param bool $required
 	 */
-	public function __construct(string $name, $value, string $type = "text")
+	public function __construct(string $name, $value, string $type = "text", $required = true)
 	{
 		# code...
 		$this->name = $name;
 		$this->value = $value;
 		$this->type = $type;
+		$this->required = $required;
 	}
-
 	/**
 	 * Creates instance from a list of attributes
 	 * 
@@ -55,7 +61,7 @@ final class BodyPart implements BodyDescriptor, Arrayable
 	{
 		$attributes['type'] = isset($attributes['type']) ? strtolower(strval($attributes['type'])) : BodyTypes::TEXT;
 		self::validateAttributes($attributes);
-		return new self($attributes['name'], $attributes['value'], $attributes['type']);
+		return new self($attributes['name'], $attributes['value'], $attributes['type'], boolval($attributes['required'] ?? false));
 	}
 
 
@@ -93,7 +99,8 @@ final class BodyPart implements BodyDescriptor, Arrayable
 			'name' => $this->name,
 			'value' => $this->value,
 			'type' => $this->type,
-			'description' => $this->description
+			'description' => $this->description,
+			'required' => boolval($this->required)
 		];
 	}
 
@@ -123,4 +130,17 @@ final class BodyPart implements BodyDescriptor, Arrayable
 		# code...
 		return $this->type;
 	}
+
+	public function setRequired(bool $required)
+	{
+		$this->required = $required;
+
+		return $this;
+	}
+
+	public function getRequired()
+	{
+		return $this->required;
+	}
+
 }

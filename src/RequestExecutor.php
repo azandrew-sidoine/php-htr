@@ -36,7 +36,7 @@ class RequestExecutor
     private $request;
 
     /**
-     * @var Closure(string $method, string $url, array $headers, array $cookies):void
+     * @var Closure(string $method, string $url, array $body, array $headers, array $cookies):void
      */
     private $beforeRequest;
 
@@ -118,7 +118,7 @@ class RequestExecutor
 
         // TODO: Send the request and return response
         if ($this->beforeRequest) {
-            ($this->beforeRequest)($method, $url, $headers, $cookies);
+            ($this->beforeRequest)($method, $url, $body, $headers, $cookies);
         }
         return Client::new([CURLOPT_USERAGENT => 'HtrRuntime/v0.1.0'])
             ->prepareRequest([

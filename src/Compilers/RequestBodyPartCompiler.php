@@ -17,6 +17,8 @@ use Drewlabs\Htr\Compilers\Concerns\ParsesValueTemplate;
 use Drewlabs\Htr\Contracts\Compiler;
 use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Contracts\BodyDescriptor;
+use Drewlabs\Htr\Utilities\ExpressionProxy;
+use Faker\Factory;
 
 // TODO : Handle files loading
 
@@ -64,8 +66,8 @@ class RequestBodyPartCompiler implements Compiler
 		if (null === $value) {
 			return [];
 		}
-        // TODO: Handle data based on type
-        $parsed = self::parseValue($this->env, strval($value->getValue()));
-		return [$value->getName() => $parsed];
+		// TODO: Handle data based on type
+		$expression = new ExpressionProxy(self::parseValue($this->env, strval($value->getValue())));
+		return [$value->getName() => $expression->call(Factory::create())];
 	}
 }

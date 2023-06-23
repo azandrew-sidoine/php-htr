@@ -30,4 +30,20 @@ interface BodyDescriptor extends Descriptor
 	 */
 	public function getType();
 
+	/**
+	 * Set the required state of the descriptor
+	 * 
+	 * @param bool $required
+	 * 
+	 * @return static 
+	 */
+	public function setRequired(bool $required);
+
+	/**
+	 * returns the required state of the body part
+	 * 
+	 * @return bool 
+	 */
+	public function getRequired();
+
 }

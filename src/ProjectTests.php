@@ -178,14 +178,23 @@ class ProjectTests
                 $requestOutputs[] = $title;
                 $requestOutputs[] = str_repeat('-', strlen($title));
                 try {
-                    $response = RequestExecutor::new($request)->before(function ($method, $url, $headers, $cookies) use (&$requestOutputs) {
+                    $response = RequestExecutor::new($request)->before(function ($method, $url, $body, $headers, $cookies) use (&$requestOutputs) {
                         // #region Write headers to outut
                         $requestOutputs[] = "/" . $method . " " . $url;
+                        $requestOutputs[] = '';
                         $requestOutputs[] = "Request Headers:";
                         foreach ($headers as $key => $value) {
                             $requestOutputs[] = "\t\t" . trim($key) . ": " . (is_array($value) ? implode(', ', $value) : $value);
                         }
                         // #region Write headers to outut
+
+                        //#region Write request body to output
+                        $requestOutputs[] = '';
+                        $requestOutputs[] = "Request Body:";
+                        foreach ($body as $key => $value) {
+                            $requestOutputs[] = "\t\t[" . trim($key) . "]: " . (is_array($value) ? json_encode($value) : $value);
+                        }
+                        //#endregion Write request body to output
 
                         // We write request parameters to the output before sending the request
                         $this->log(implode(PHP_EOL, $requestOutputs) . PHP_EOL);

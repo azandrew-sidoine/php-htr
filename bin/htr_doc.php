@@ -21,6 +21,7 @@ use Drewlabs\Htr\RequestDirectory;
 use Drewlabs\Htr\Header;
 use Drewlabs\Htr\Translator\Translations;
 use Drewlabs\Htr\Utilities\Console;
+use Drewlabs\Htr\Contracts\BodyDescriptor;
 
 /**
  * 
@@ -51,8 +52,8 @@ function htr_doc_preprare_headers(array $headers)
 
 /**
  * 
- * @param array $body 
- * @return Descriptor[]|Header 
+ * @param BodyDescriptor[] $body 
+ * @return string
  * @throws InvalidArgumentException 
  */
 function htr_doc_preprare_body(array $body, RepositoryInterface $env)
@@ -66,13 +67,12 @@ function htr_doc_preprare_body(array $body, RepositoryInterface $env)
     $markdownTable->addColumn('description', new Column('Description', Column::ALIGN_LEFT));
     // Configure table
 
-    $body = array_map(function ($param) use ($env) {
-        return RequestBodyPartCompiler::new($env)->compile($param);
-    }, $body);
-    $body = array_merge(...$body);
+    // $body = array_map(function ($param) use ($env) {
+    //     return RequestBodyPartCompiler::new($env)->compile($param);
+    // }, $body);
 
-    foreach ($body as $key => $value) {
-        $lines[] = ['name' => $key, 'required' => 'True', 'description' => ''];
+    foreach ($body as $bodyPart) {
+        $lines[] = ['name' => $bodyPart->getName(), 'required' => $bodyPart->getRequired() ? 'True' : 'False', 'description' => ''];
     }
     foreach ($markdownTable->generate($lines) as $row) {
         $output[] = $row;

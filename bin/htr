@@ -194,7 +194,10 @@ function htr_prepare_env(array $values)
     $output = [];
 
     foreach ($values as $value) {
-        list($k, $v) = explode(':', $value);
+        $key = trim(explode(':', $value)[0] ?? '');
+        $v = empty($key) ? $value : substr($value, strlen($key) + 1);
+        // To make sure no empty string is passed as array key we set the key to 0 if the key is empty
+        $k = empty($key) ? 0 : $key;
         $output[$k] = $v;
     }
     return $output;
@@ -272,6 +275,7 @@ function htr_run_tests(string $inputPath, array $options, string $outputPath = n
         echo Console::normal(sprintf("\n\nExecution completed. Thanks for using the program"), null, 'green') . PHP_EOL;
         echo PHP_EOL;
     };
+    
     // #endregion Create the output function
     // We invoke Requests Test execution object to execute the requests
     $client = isset($options['verbose']) && boolval($options['verbose']) ? ProjectTests::new(Project::fromAttributes($attributes))->debug() : ProjectTests::new(Project::fromAttributes($attributes));

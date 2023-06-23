@@ -27,7 +27,8 @@
     "minimum-stability": "dev",
     "require": {
         "ext-json": "*",
-        "drewlabs/curl-rest-client": "^0.2.6"
+        "drewlabs/curl-rest-client": "^0.2.6",
+        "fakerphp/faker": "^1.0"
     },
     "config": {
         "allow-plugins": {
