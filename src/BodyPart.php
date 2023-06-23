@@ -17,7 +17,7 @@ use Drewlabs\Htr\Concerns\DescriptorTrait;
 use Drewlabs\Htr\Contracts\BodyDescriptor;
 use Drewlabs\Htr\Contracts\Arrayable;
 
-final class RequestBodyPart implements BodyDescriptor, Arrayable
+final class BodyPart implements BodyDescriptor, Arrayable
 {
 
 	use DescriptorTrait;
@@ -92,7 +92,8 @@ final class RequestBodyPart implements BodyDescriptor, Arrayable
 		return [
 			'name' => $this->name,
 			'value' => $this->value,
-			'type' => $this->type
+			'type' => $this->type,
+			'description' => $this->description
 		];
 	}
 

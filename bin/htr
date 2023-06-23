@@ -3,6 +3,8 @@
 
 require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 
+require __DIR__ . '/htr_doc.php';
+
 // #region Define the total supported options argument list
 if (!defined('HTr_MAX_ARGV')) {
     define('HTr_MAX_ARGV', 1000);
@@ -17,11 +19,13 @@ if (!defined('HTR_VERSION')) {
 }
 // #endregion Define the total supported options argument list
 
+use Drewlabs\Htr\Markdown\Column;
+use Drewlabs\Htr\Markdown\Table;
 use Drewlabs\Htr\Utilities\Console;
 use Drewlabs\Htr\Project;
 use Drewlabs\Htr\ProjectTests;
 use Drewlabs\Htr\RandomID;
-
+use Drewlabs\Htr\Translator\Translations;
 
 /**
  * HTr usage help message
@@ -35,13 +39,18 @@ function htr_help_function(string $version = '0.2.0')
     A fast and simple HTTP request Test runner
     
     USAGE:
-        ./vendor/bin/htr <PATH> [OPTIONS]
+        ./vendor/bin/htr <SUBCOMMAND> [OPTIONS]
     
     FLAGS:
         -h, --help
             Prints help information
+
+    SUBCOMMAND
+        test                Exectue an HTTP Test
+        doc                 Creates a markdown documentation
     
     OPTIONS:
+        --input             Path to the json / yaml input
         --verbose           Execute script in debug mode printing every execution stack to the console
         --output            Path to test logs
         --req               List of requests to execute in the configuration file
@@ -227,7 +236,7 @@ function htr_run_tests(string $inputPath, array $options, string $outputPath = n
 
     $attributes = isset($options['json']) && boolval($options['json'])  ? @json_decode(file_get_contents($path), true) : \yaml_parse(file_get_contents($path));
 
-    if (!is_array($attributes) || empty($attributes) ) {
+    if (!is_array($attributes) || empty($attributes)) {
         echo Console::white(sprintf("Failed to parse configuration file located at %s", $inputPath), null, 'red') . PHP_EOL . PHP_EOL;
         return;
     }
@@ -295,6 +304,23 @@ function htr_run_test_in_directory(string $directory, string $format, array $opt
         htr_run_tests($inputPath, $options ?? [], sprintf("%s%s%s", $directory, DIRECTORY_SEPARATOR, sprintf("%slog", str_replace(substr($path, strrpos($path, '.') + 1), '', $path))));
     }
 }
+
+/**
+ * execute tests using HTr
+ *  
+ * @param string $path 
+ * @param mixed $format 
+ * @param array $options 
+ * @return void 
+ * @throws Exception 
+ */
+function htr_run_tests_program(string $path, $format, array $options)
+{
+    if (is_dir($path)) {
+        return htr_run_test_in_directory($path, $format, $options);
+    }
+    return htr_run_tests($path, $options, $options['output'] ??  null);
+}
 //#endregion Tests runner
 
 /**
@@ -312,13 +338,13 @@ function main(array $args = [])
     // #region Load command line arguments and options
     // In case the list of arguments starts with - or --, the command input configuration is the last parameter, else it's the first parameter
     if (empty($args)) {
-        list($optionsArgs, $path) = [[], null];
+        list($optionsArgs, $command) = [[], null];
     } else if ('-' === substr(strval($args[0]), 0, 1)) {
         // Case the total list of argument is 1 or the last element starts with - or --, we do not treat the last argument as command argument
         $optionsArgs = array_slice($args, 0, ((count($args) === 1) || ('-' === substr(strval($args[count($args) - 1]), 0, 1)) ? null : count($args) - 1));
-        $path = array_slice($args, count($optionsArgs))[0] ?? null;
+        $command = array_slice($args, count($optionsArgs))[0] ?? null;
     } else {
-        $path = $args[0];
+        $command = $args[0];
         $optionsArgs = array_slice($args, 1);
     }
     $options = htr_cmd_options($optionsArgs);
@@ -329,6 +355,7 @@ function main(array $args = [])
         return;
     }
 
+    $path = $options['input'] ?? null;
     if (null === $path) {
         echo htr_help_function(HTR_VERSION);
         return;
@@ -348,10 +375,21 @@ function main(array $args = [])
         return;
     }
 
-    if (is_dir($path)) {
-        return htr_run_test_in_directory($path, $format, $options);
+    switch (strtolower($command)) {
+        case 'test':
+            # code...
+            htr_run_tests_program($path, $format, $options);
+            break;
+        case 'doc':
+        case 'docs':
+            # code...
+            htr_doc_build($path, $options, $options['output'] ??  sprintf("%s%s%s.md", __DIR__,DIRECTORY_SEPARATOR, RandomID::new()->__invoke()), __DIR__);
+            break;
+        default:
+            # code...
+            htr_help_function();
+            break;
     }
-    return htr_run_tests($path, $options, $options['output'] ??  null);
 }
 
 main(array_slice($argv ?? [], 1));

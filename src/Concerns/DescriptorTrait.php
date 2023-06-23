@@ -35,6 +35,13 @@ trait DescriptorTrait
 	private $value = null;
 
 	/**
+	 * Description property
+	 * 
+	 * @var string|mixed
+	 */
+	private $description;
+
+	/**
 	 * Set name property value
 	 * 
 	 * @param string $value
@@ -117,6 +124,29 @@ trait DescriptorTrait
 	}
 
 	/**
+	 * $description property setter
+	 * 
+	 * @param string|mixed $value
+	 */
+	public function setDescription($value)
+	{
+		$this->description = $value;
+
+		return $this;
+	}
+
+	/**
+	 * $description property getter
+	 * 
+	 * @return string|mixed
+	 * 
+	 */
+	public function getDescription()
+	{
+		return $this->description;
+	}
+
+	/**
 	 * Returns the dictionnary representation of the component
 	 * 
 	 *
@@ -126,7 +156,8 @@ trait DescriptorTrait
 	{
 		return [
 			'name' => $this->name,
-			'value' => $this->value
+			'value' => $this->value,
+			'description' => $this->description
 		];
 	}
 }

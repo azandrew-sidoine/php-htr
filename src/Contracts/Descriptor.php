@@ -45,4 +45,19 @@ interface Descriptor
 	 */
 	public function getValue();
 
+	/**
+	 * $description property setter
+	 * 
+	 * @param string|mixed $value
+	 */
+	public function setDescription($value);
+
+	/**
+	 * $description property getter
+	 * 
+	 * @return string|mixed
+	 * 
+	 */
+	public function getDescription();
+
 }

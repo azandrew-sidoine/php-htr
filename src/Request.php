@@ -14,18 +14,22 @@ declare(strict_types=1);
 namespace Drewlabs\Htr;
 
 use Drewlabs\Htr\Concerns\ComponentMixin;
+use Drewlabs\Htr\Concerns\ResponseAware as ResponseAwareMixin;
 use Drewlabs\Htr\Contracts\ComponentInterface;
 use Drewlabs\Htr\Contracts\Arrayable;
 use Drewlabs\Htr\Contracts\Descriptor;
 use Drewlabs\Htr\Testing\TestRunner;
 use Drewlabs\Htr\Contracts\BodyDescriptor;
 use Drewlabs\Htr\Contracts\RequestInterface;
+use Drewlabs\Htr\Contracts\ResponseAware;
 use Drewlabs\Htr\Utilities\Assert;
+use Drewlabs\Htr\Utilities\PrepareDescriptors;
 
-final class Request implements ComponentInterface, Arrayable, RequestInterface
+final class Request implements ComponentInterface, Arrayable, RequestInterface, ResponseAware
 {
 
 	use ComponentMixin;
+	use ResponseAwareMixin;
 
 	/**
 	 * @var string
@@ -133,6 +137,14 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface
 		if (isset($attributes['depends_on']) && is_string($attributes['depends_on'])) {
 			$instance = $instance->setDependsOn($attributes['depends_on']);
 		}
+
+		if (isset($attributes['response']['headers'])) {
+			$instance = $instance->setResponseHeaders($attributes['response']['headers'] ?? []);
+		}
+	
+		if (isset($attributes['response']['body'])) {
+			$instance = $instance->setResponseBody($attributes['response']['body'] ?? []);
+		}
 		// #endregion Set the request dependency graph
 
 		// Returns the constructor instance
@@ -202,7 +214,7 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface
 		$value = $this->cleanDescriptorsValue($value);
 		Assert::assertIsArrayOfArray($value);
 		$this->headers = array_map(function ($item) {
-			return RequestHeader::fromAttributes($item);
+			return Header::fromAttributes($item);
 		}, $value);
 
 		return $this;
@@ -255,7 +267,7 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface
 		$value = $this->cleanDescriptorsValue($value);
 		Assert::assertIsArrayOfArray($value);
 		$this->body = array_map(function ($item) {
-			return RequestBodyPart::fromAttributes($item);
+			return BodyPart::fromAttributes($item);
 		}, $value);
 
 		return $this;
@@ -440,14 +452,6 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface
 	 */
 	private function cleanDescriptorsValue(array $descriptors)
 	{
-		return iterator_to_array((function () use ($descriptors) {
-			foreach ($descriptors as $key => $value) {
-				if (is_string($key) && !is_array($value)) {
-					yield ['name' => $key, 'value' => $value];
-					continue;
-				}
-				yield $value;
-			}
-		})());
+		return (new PrepareDescriptors)->call($descriptors);
 	}
 }

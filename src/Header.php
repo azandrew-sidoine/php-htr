@@ -17,7 +17,7 @@ use Drewlabs\Htr\Concerns\DescriptorTrait;
 use Drewlabs\Htr\Contracts\Descriptor;
 use Drewlabs\Htr\Contracts\Arrayable;
 
-final class RequestHeader implements Descriptor, Arrayable
+final class Header implements Descriptor, Arrayable
 {
 
 	use DescriptorTrait;
