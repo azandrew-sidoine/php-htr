@@ -17,7 +17,6 @@ To install the library simply run the command below:
 
 ## Usage
 
-
 ### Configuration
 
 `HTr` client application works with configuration files written in either `JSON (Javascript Object Notation)` format or `YAML` format. Below is a sample configuration file:
@@ -148,7 +147,7 @@ To Access properties of response body, we use [body] concatenated with the prope
 The library provides a command line interface for testing your HTTP REST Service based on a configuration file. Below is the command to run a basic test command using a configuration file located in the root of your project:
 
 ```bash
-> ./vendor/bin/htr $(pwd)/htr.yml
+> ./vendor/bin/htr test --input=$(pwd)/htr.yml
 ```
 
 The command above assune you have a file named `htr.yml` in the root of your project that contains a valid `HTr` test configuration.
@@ -157,45 +156,50 @@ The command above assune you have a file named `htr.yml` in the root of your pro
   By default the `cli` script will run tests in silent mode and write output to a uniquely generated file at the root of your project. To run the `HTr cli` in debug mode, execute the command below:
 
   ```bash
-  > ./vendor/bin/htr $(pwd)/htr.yml --verbose
+  > ./vendor/bin/htr test --input=$(pwd)/htr.yml --verbose
   ```
 
   Running the client application in debug mode allow developper ro see live running request with each request parameters output to the terminal.
-
 - Command output
   To override the output file name path were command logs are written simple use the `--output` flag as below:
 
   ```bash
-  > ./vendor/bin/htr $(pwd)/htr.yml --output="$(pwd)/htr.log"
+  > ./vendor/bin/htr test --input=$(pwd)/htr.yml --output="$(pwd)/htr.log"
   ```
-
 - Request filtering
 
   Sometimes developper might want to execute specific requests or specific request directory components. For such cases, `HTr` provides developpers with `--request` or `--req` for filtering by request name or id.
 
   ```bash
-  > ./vendor/bin/htr $(pwd)/htr.yml -req="request-name"
+  > ./vendor/bin/htr test --input=$(pwd)/htr.yml -req="request-name"
   // For running single request
   // or
-  > ../vendor/bin/htr $(pwd)/htr.yml -req="request1" --req="request2"
+  > ../vendor/bin/htr test --input=$(pwd)/htr.yml -req="request1" --req="request2"
   // For running multiple request matching the provided name
   ```
 
   Similary, to execute specific request directories, you can use `-d` or `-directory` flag. The `HTr` client will only execute tests for requests in specified directory
 
 ```bash
->./vendor/bin/htr $(pwd)/htr.yml -d="directory name"
+>./vendor/bin/htr test --input=$(pwd)/htr.yml -d="directory name"
 // For running tests in a single directory
 // or
-> ./vendor/bin/htr $(pwd)/htr.yml -d="directory1" -d="directory2"
+> ./vendor/bin/htr test --input=$(pwd)/htr.yml -d="directory1" -d="directory2"
 
 For running tests in multiple directories
 ```
 
+
+- Overriding environment variables
+
+  When running tests using HTr client, `--input` argument usually contains an `env` field that is that are applied when running tests. To override the environment variable with command line variables, simple use `--env` switch as follow:
+
+  > ./vendor/bin/htr test --env=MyVar:MyVarValue --input=$(pwd)/htr.yml
+  >
 - Json
   By default the `HTr` client support `YAML` based configuration files. In order to use `JSON` configuration file instead, simply use the `--json` flag as follow:
 
-  ```
-  > ./vendor/bin/htr $(pwd)/htr.json --json
+```
+  > ./vendor/bin/htr test --input=$(pwd)/htr.json --json
 
-  ```
+```

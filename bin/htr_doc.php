@@ -11,8 +11,12 @@ use Drewlabs\Htr\Markdown\Column;
 use Drewlabs\Htr\Markdown\Table;
 use Drewlabs\Htr\Project;
 use Drewlabs\Htr\RandomID;
-use Drewlabs\Htr\BodyPart;
+use Drewlabs\Htr\Compilers\AuthorizationHeaderCompiler;
+use Drewlabs\Htr\Compilers\RequestBodyPartCompiler;
+use Drewlabs\Htr\Compilers\RequestHeaderCompiler;
+use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Contracts\ResponseAware;
+use Drewlabs\Htr\EnvRepository;
 use Drewlabs\Htr\RequestDirectory;
 use Drewlabs\Htr\Header;
 use Drewlabs\Htr\Translator\Translations;
@@ -51,7 +55,7 @@ function htr_doc_preprare_headers(array $headers)
  * @return Descriptor[]|Header 
  * @throws InvalidArgumentException 
  */
-function htr_doc_preprare_body(array $body)
+function htr_doc_preprare_body(array $body, RepositoryInterface $env)
 {
     $lines = [];
     $output = [];
@@ -62,15 +66,13 @@ function htr_doc_preprare_body(array $body)
     $markdownTable->addColumn('description', new Column('Description', Column::ALIGN_LEFT));
     // Configure table
 
+    $body = array_map(function ($param) use ($env) {
+        return RequestBodyPartCompiler::new($env)->compile($param);
+    }, $body);
+    $body = array_merge(...$body);
+
     foreach ($body as $key => $value) {
-        if ($value instanceof Descriptor) {
-            $bodyPart = $value;
-        } else if (is_string($key) && !is_array($value)) {
-            $bodyPart = BodyPart::fromAttributes(['name' => $key, 'value' => $value]);
-        } else {
-            $bodyPart = BodyPart::fromAttributes($value);
-        }
-        $lines[] = ['name' => $bodyPart->getName(), 'required' => 'True', 'description' => ''];
+        $lines[] = ['name' => $key, 'required' => 'True', 'description' => ''];
     }
     foreach ($markdownTable->generate($lines) as $row) {
         $output[] = $row;
@@ -97,7 +99,7 @@ function htr_doc_get_translation_factory(string $name, string $lang = 'en')
  * @param ComponentInterface $component 
  * @return string 
  */
-function htr_doc_create_component(ComponentInterface $component, string $header, array &$output, string $lang = 'en')
+function htr_doc_create_component(ComponentInterface $component, string $header, EnvRepository $env, array &$output, string $lang = 'en')
 {
     // TODO: Generate name component
     $output[] = '';
@@ -110,7 +112,7 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
         // TODO: Review the line added after the description later
         $output[] = '';
         foreach ($component->getItems() as $item) {
-            htr_doc_create_component($item, "$header#", $output, $lang);
+            htr_doc_create_component($item, "$header#", $env, $output, $lang);
         }
         return;
     }
@@ -119,24 +121,34 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
         $output[] = !empty(trim($description = $component->getDescription())) ? $description : htr_doc_get_translation_factory('description', $lang)($component->getMethod(), $component->getUrl());
 
         // TODO: Generate output for request headers
-        $requestHeaders = htr_doc_preprare_headers($component->getHeaders() ?? []);
-        if (!empty($requestHeaders)) {
+        $requestHeaders = array_map(function ($header) use ($env) {
+            return RequestHeaderCompiler::new($env)->compile($header);
+        }, htr_doc_preprare_headers($component->getHeaders() ?? []));
+        if (!empty($requestHeaders) || !empty($component->getAuthorization())) {
             $output[] = '';
             $output[] = 'Request Headers:';
+
+        }
+        if (!empty($requestHeaders)) {
             foreach ($requestHeaders as $value) {
-                $output[] = sprintf("\t`%s: %s`", $value->getName(), $value->getValue());
+                foreach ($value as $k => $v) {
+                    $output[] = sprintf("\t`%s: %s`", $k, $v);
+                }
             }
         }
 
         // TODO: Add output for authorization headers
         if ($authorization = $component->getAuthorization()) {
-            $output[] = sprintf("\t`Authorization: %s %s`", ucfirst($authorization->getName()), $authorization->getValue());
+            $authorization = AuthorizationHeaderCompiler::new($env)->compile($authorization);
+            foreach ($authorization as $key => $value) {
+                $output[] = sprintf("\t`%s: %s`", $key, strlen($value) > 32 ? sprintf("%s...", substr($value, 0, 32)) : $value);
+            }
         }
         // TODO: Generate output for request body
         if (!empty($requestBody = $component->getBody())) {
             $output[] = '';
             $output[] = 'Request Body:';
-            $output[] = htr_doc_preprare_body($requestBody ?? []);
+            $output[] = htr_doc_preprare_body($requestBody ?? [], $env);
         }
 
         // TODO: Generate output for request response configuration
@@ -148,16 +160,22 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
             $output[] = "Response:";
             $responseHeaders = htr_doc_preprare_headers($component->getHeaders() ?? []);
             if (!empty($responseHeaders)) {
+                $responseHeaders = array_map(function ($header) use ($env) {
+                    return RequestHeaderCompiler::new($env)->compile($header);
+                }, $responseHeaders);
                 $output[] = "\tHeaders:";
-                foreach ($responseHeaders as $value) {
-                    $output[] = sprintf("\t\t`%s: %s`", $value->getName(), $value->getValue());
+                foreach ($requestHeaders as $value) {
+                    foreach ($value as $k => $v) {
+                        # code...
+                        $output[] = sprintf("\t\t`%s: %s`", $k, $v);
+                    }
                 }
             }
 
             if (!empty($responseBody = $component->getResponseBody())) {
                 $output[] = '';
                 $output[] = "\tBody:";
-                $output[] = htr_doc_preprare_body($responseBody ?? []);
+                $output[] = htr_doc_preprare_body($responseBody ?? [], $env);
             }
         }
     }
@@ -212,14 +230,14 @@ function htr_doc_build(string $inputPath, array $options, string $outputPath = _
     $project = Project::fromAttributes($attributes);
     $header = "##";
     $output = [];
-    
+
     // Set project header name
     $output[] = sprintf("# %s", $project->getName());
 
     // Add project component 
     foreach ($project->getComponents() as $component) {
         # code...
-        htr_doc_create_component($component, $header, $output, $options['lang'] ?? 'en');
+        htr_doc_create_component($component, $header, $project->env(), $output, $options['lang'] ?? 'en');
     }
     $output[] = '';
 
