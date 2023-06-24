@@ -18,11 +18,11 @@ use Drewlabs\Curl\REST\Client;
 use Drewlabs\Htr\Contracts\RequestInterface;
 use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Compilers\AuthorizationHeaderCompiler;
-use Drewlabs\Htr\Compilers\RequestBodyPartCompiler;
-use Drewlabs\Htr\Compilers\RequestCookieCompiler;
-use Drewlabs\Htr\Compilers\RequestHeaderCompiler;
-use Drewlabs\Htr\Compilers\RequestParamCompiler;
-use Drewlabs\Htr\Compilers\RequestURLCompiler;
+use Drewlabs\Htr\Compilers\BodyPartCompiler;
+use Drewlabs\Htr\Compilers\CookieCompiler;
+use Drewlabs\Htr\Compilers\HeaderCompiler;
+use Drewlabs\Htr\Compilers\ParamCompiler;
+use Drewlabs\Htr\Compilers\URLCompiler;
 use Drewlabs\Htr\Contracts\BodyDescriptor;
 use Drewlabs\Htr\Contracts\Descriptor;
 use Drewlabs\Curl\REST\Contracts\ResponseInterface;
@@ -87,31 +87,31 @@ class RequestExecutor
     public function execute(RepositoryInterface $env)
     {
         # code...
-        $url = RequestURLCompiler::new($env)->compile($this->request->getUrl());
+        $url = URLCompiler::new($env)->compile($this->request->getUrl());
         $method = $this->request->getMethod() ?? 'GET';
         $headers = array_map(function (Descriptor $header) use ($env) {
-            return RequestHeaderCompiler::new($env)->compile($header);
+            return HeaderCompiler::new($env)->compile($header);
         }, $this->request->getHeaders() ?? []);
         // TODO : Add default headers
         $headers = array_merge(self::DEFAULT_HEADERS, (null !== ($authorization = $this->request->getAuthorization())) ? AuthorizationHeaderCompiler::new($env)->compile($authorization) : [], ...$headers);
 
         // #region Prepare request  query params
         $params = array_map(function (Descriptor $param) use ($env) {
-            return RequestParamCompiler::new($env)->compile($param);
+            return ParamCompiler::new($env)->compile($param);
         }, $this->request->getParams() ?? []);
         $params = array_merge(...$params);
         // #endregion Prepare request query params
 
         // #region Prepare request body
         $body = array_map(function (BodyDescriptor $param) use ($env) {
-            return RequestBodyPartCompiler::new($env)->compile($param);
+            return BodyPartCompiler::new($env)->compile($param);
         }, $this->request->getBody() ?? []);
         $body = array_merge(...$body);
         // #endregion Prepare request body
 
         // #region Prepare request cookies
         $cookies = array_map(function (Descriptor $param) use ($env) {
-            return RequestCookieCompiler::new($env)->compile($param);
+            return CookieCompiler::new($env)->compile($param);
         }, $this->request->getCookies() ?? []);
         $cookies = array_merge(...$cookies);
         // #endregion Prepare request cookies

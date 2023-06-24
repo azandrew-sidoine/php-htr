@@ -16,9 +16,13 @@ namespace Drewlabs\Htr\Compilers;
 use Drewlabs\Htr\Compilers\Concerns\ParsesValueTemplate;
 use Drewlabs\Htr\Contracts\Compiler;
 use Drewlabs\Htr\Contracts\RepositoryInterface;
-use Drewlabs\Htr\Contracts\Descriptor;
+use Drewlabs\Htr\Contracts\BodyDescriptor;
+use Drewlabs\Htr\Utilities\ExpressionProxy;
+use Faker\Factory;
 
-class RequestHeaderCompiler implements Compiler
+// TODO : Handle files loading
+
+class BodyPartCompiler implements Compiler
 {
 	use ParsesValueTemplate;
 
@@ -53,7 +57,7 @@ class RequestHeaderCompiler implements Compiler
 	/**
 	 * Compile value and return the compiled result
 	 * 
-	 * @param Descriptor $value
+	 * @param BodyDescriptor $value
 	 *
 	 * @return array<string,mixed>
 	 */
@@ -62,7 +66,8 @@ class RequestHeaderCompiler implements Compiler
 		if (null === $value) {
 			return [];
 		}
-		$result = is_string($result = $value->getValue()) ? self::parseValue($this->env, strval($result)) : $result;
+		// TODO: Handle data based on type
+		$result = is_string($result = $value->getValue()) ? (new ExpressionProxy(self::parseValue($this->env, strval($result))))->call(Factory::create()) : $result;
 		return [$value->getName() => $result];
 	}
 }

@@ -12,8 +12,8 @@ use Drewlabs\Htr\Markdown\Table;
 use Drewlabs\Htr\Project;
 use Drewlabs\Htr\RandomID;
 use Drewlabs\Htr\Compilers\AuthorizationHeaderCompiler;
-use Drewlabs\Htr\Compilers\RequestBodyPartCompiler;
-use Drewlabs\Htr\Compilers\RequestHeaderCompiler;
+use Drewlabs\Htr\Compilers\BodyPartCompiler;
+use Drewlabs\Htr\Compilers\HeaderCompiler;
 use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Contracts\ResponseAware;
 use Drewlabs\Htr\EnvRepository;
@@ -122,7 +122,7 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
 
         // TODO: Generate output for request headers
         $requestHeaders = array_map(function ($header) use ($env) {
-            return RequestHeaderCompiler::new($env)->compile($header);
+            return HeaderCompiler::new($env)->compile($header);
         }, htr_doc_preprare_headers($component->getHeaders() ?? []));
         if (!empty($requestHeaders) || !empty($component->getAuthorization())) {
             $output[] = '';
@@ -161,7 +161,7 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
             $responseHeaders = htr_doc_preprare_headers($component->getHeaders() ?? []);
             if (!empty($responseHeaders)) {
                 $responseHeaders = array_map(function ($header) use ($env) {
-                    return RequestHeaderCompiler::new($env)->compile($header);
+                    return HeaderCompiler::new($env)->compile($header);
                 }, $responseHeaders);
                 $output[] = "\tHeaders:";
                 foreach ($requestHeaders as $value) {

@@ -16,8 +16,9 @@ namespace Drewlabs\Htr\Compilers;
 use Drewlabs\Htr\Compilers\Concerns\ParsesValueTemplate;
 use Drewlabs\Htr\Contracts\Compiler;
 use Drewlabs\Htr\Contracts\RepositoryInterface;
+use Drewlabs\Htr\Contracts\Descriptor;
 
-class RequestURLCompiler implements Compiler
+class HeaderCompiler implements Compiler
 {
 	use ParsesValueTemplate;
 
@@ -52,12 +53,16 @@ class RequestURLCompiler implements Compiler
 	/**
 	 * Compile value and return the compiled result
 	 * 
-	 * @param string $value
+	 * @param Descriptor $value
 	 *
-	 * @return string
+	 * @return array<string,mixed>
 	 */
 	public function compile($value)
 	{
-		return self::parseValue($this->env, $value);
+		if (null === $value) {
+			return [];
+		}
+		$result = is_string($result = $value->getValue()) ? self::parseValue($this->env, strval($result)) : $result;
+		return [$value->getName() => $result];
 	}
 }

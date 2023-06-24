@@ -18,7 +18,7 @@ use Drewlabs\Htr\Contracts\Compiler;
 use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Contracts\Descriptor;
 
-class RequestParamCompiler implements Compiler
+class ParamCompiler implements Compiler
 {
 	use ParsesValueTemplate;
 

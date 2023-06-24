@@ -18,7 +18,7 @@ use Drewlabs\Htr\Contracts\Compiler;
 use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Contracts\Descriptor;
 
-class RequestCookieCompiler implements Compiler
+class CookieCompiler implements Compiler
 {
     use ParsesValueTemplate;
 
