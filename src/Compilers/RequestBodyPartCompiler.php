@@ -67,7 +67,7 @@ class RequestBodyPartCompiler implements Compiler
 			return [];
 		}
 		// TODO: Handle data based on type
-		$expression = new ExpressionProxy(self::parseValue($this->env, strval($value->getValue())));
-		return [$value->getName() => $expression->call(Factory::create())];
+		$result = is_string($result = $value->getValue()) ? (new ExpressionProxy(self::parseValue($this->env, strval($result))))->call(Factory::create()) : $result;
+		return [$value->getName() => $result];
 	}
 }

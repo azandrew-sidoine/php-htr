@@ -62,6 +62,7 @@ class AuthorizationHeaderCompiler implements Compiler
 		if (null === $value) {
 			return [];
 		}
-		return ['Authorization' => sprintf("%s %s", ucfirst($value->getName()), self::parseValue($this->env, strval($value->getValue())))];
+		$result = is_string($result = $value->getValue()) ? self::parseValue($this->env, strval($result)) : $result;
+		return ['Authorization' => sprintf("%s %s", ucfirst($value->getName()), $result)];
 	}
 }

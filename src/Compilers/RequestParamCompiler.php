@@ -62,7 +62,8 @@ class RequestParamCompiler implements Compiler
 		if(null === $value) {
 			return [];
 		}
-		return [$value->getName() => self::parseValue($this->env, strval($value->getValue()))];
+		$result = is_string($result = $value->getValue()) ? self::parseValue($this->env, strval($result)) : $result;
+		return [$value->getName() => $result];
 	}
 
 }

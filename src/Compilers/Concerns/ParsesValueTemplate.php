@@ -9,23 +9,23 @@ trait ParsesValueTemplate
      * Returns parsed result of the provided $key
      * 
      * @param RepositoryInterface $repository 
-     * @param string $key
+     * @param mixed $key
      * 
      * @return string
      */
-    public static function parseValue(RepositoryInterface $repository, string $key)
+    public static function parseValue(RepositoryInterface $repository, string $value)
     {
-        if (false !== (strpos($key, '[')) && false !== (strpos($key, ']'))) {
+        if (false !== (strpos($value, '[')) && false !== (strpos($value, ']'))) {
             // For each keys in the environment repository, we replace the environment
             // placeholder with the matching value
             foreach ($repository->keys() as $env_key) {
-                if (false === strpos($key, "[$env_key]")) {
+                if (false === strpos($value, "[$env_key]")) {
                     continue;
                 }
-                $key = str_replace("[$env_key]", $repository->get($env_key, ''), $key);
+                $value = str_replace("[$env_key]", $repository->get($env_key, ''), $value);
             }
-            return $key;
+            return $value;
         }
-        return $key;
+        return $value;
     }
 }

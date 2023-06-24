@@ -60,7 +60,7 @@ class ExpressionProxy
      */
     public function call(object $proxied)
     {
-        if (false !== strpos($value = trim($this->expression), '->')) {
+        if (is_string($this->expression) && (false !== strpos($value = trim($this->expression), '->'))) {
             try {
                 $callChains = [];
                 foreach (explode('->', $value) as $v) {
