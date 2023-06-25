@@ -90,23 +90,23 @@ class TestStatement
 			case 'eq':
 			case '=':
 			case '==':
-				return $left == $right;
+				return $this->getValue($left) == $this->getValue($right);
 			case 'ne':
 			case '!=':
 			case '<>':
-				return $left != $right;
+				return $this->getValue($left) != $this->getValue($right);
 			case 'lt':
 			case '<':
-				return $left < $right;
+				return $this->getValue($left) < $this->getValue($right);
 			case 'lte':
 			case '<=':
-				return $left <= $right;
+				return $this->getValue($left) <= $this->getValue($right);
 			case 'gt':
 			case '>':
-				return $left < $right;
+				return $this->getValue($left) < $this->getValue($right);
 			case 'gte':
 			case '>=':
-				return $left >= $right;
+				return $this->getValue($left) >= $this->getValue($right);
 			case 'in':
 				return false !== array_search($left, is_string($right) ? explode(', ', $right) : $right ?? []);
 			case 'has':
@@ -168,5 +168,27 @@ class TestStatement
 			return $current ?? $default;
 		}
 		return array_key_exists($name, $array ?? []) ? $array[$name] : $default;
+	}
+
+	/**
+	 * return the value with the required type information
+	 * @param mixed $value 
+	 * @return int|float|bool|string|array
+	 */
+	private function getValue($value)
+	{
+		if (is_array($value)) {
+			return $value;
+		}
+	
+		if (is_string($value) && is_numeric($value)) {
+			return false === strpos($value, '.') ? intval($value) : floatval($value);
+		}
+
+		if (is_string($value) && in_array($result = strtolower(trim($value)), ['false', 'true'])) {
+			return $result === 'true' ? true : false;
+		}
+
+		return $value;
 	}
 }

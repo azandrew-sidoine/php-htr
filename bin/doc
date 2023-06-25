@@ -12,7 +12,6 @@ use Drewlabs\Htr\Markdown\Table;
 use Drewlabs\Htr\Project;
 use Drewlabs\Htr\RandomID;
 use Drewlabs\Htr\Compilers\AuthorizationHeaderCompiler;
-use Drewlabs\Htr\Compilers\BodyPartCompiler;
 use Drewlabs\Htr\Compilers\HeaderCompiler;
 use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Contracts\ResponseAware;

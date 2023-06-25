@@ -3,7 +3,7 @@
 
 require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 
-require __DIR__ . '/htr_doc.php';
+require __DIR__ . '/doc';
 
 // #region Define the total supported options argument list
 if (!defined('HTr_MAX_ARGV')) {
@@ -19,13 +19,10 @@ if (!defined('HTR_VERSION')) {
 }
 // #endregion Define the total supported options argument list
 
-use Drewlabs\Htr\Markdown\Column;
-use Drewlabs\Htr\Markdown\Table;
 use Drewlabs\Htr\Utilities\Console;
 use Drewlabs\Htr\Project;
 use Drewlabs\Htr\ProjectTests;
 use Drewlabs\Htr\RandomID;
-use Drewlabs\Htr\Translator\Translations;
 
 /**
  * HTr usage help message

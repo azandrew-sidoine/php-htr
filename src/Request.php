@@ -174,8 +174,8 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface, 
 			'params' => array_map(function (Arrayable $param) {
 				return $param->toArray();
 			}, $this->getParams()),
-			'body' => array_map(function (Arrayable $header) {
-				return $header->toArray();
+			'body' => array_map(function (Arrayable $body) {
+				return $body->toArray();
 			}, $this->getBody()),
 			'tests' => $this->tests->toArray()
 		];
@@ -183,6 +183,19 @@ final class Request implements ComponentInterface, Arrayable, RequestInterface, 
 		if ($this->authorization) {
 			$array['authorization'] = $this->authorization->toArray();
 		}
+
+		// #region response body  to array
+		if ($this->responseBody) {
+			$array['response'] = [
+				'headers' => array_map(function (Arrayable $header) {
+					return $header->toArray();
+				}, $this->getResponseHeaders()),
+				'body' => array_map(function(Arrayable $body) {
+					return $body->toArray();
+				}, $this->getResponseBody())
+			];
+		}
+		//#endregion response body to array
 		return $array;
 	}
 
