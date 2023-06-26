@@ -1,9 +1,11 @@
 #!/usr/bin/env php
 <?php
 
+#region required scripts
 require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
-
 require __DIR__ . '/doc';
+require __DIR__ . '/version';
+#endregion required scripts
 
 // #region Define the total supported options argument list
 if (!defined('HTr_MAX_ARGV')) {
@@ -12,10 +14,6 @@ if (!defined('HTr_MAX_ARGV')) {
 
 if (!defined('HTR_SUPPORTED_EXTENSION')) {
     define('HTR_SUPPORTED_EXTENSION', ['json', 'yaml']);
-}
-
-if (!defined('HTR_VERSION')) {
-    define('HTR_VERSION', '0.2.2');
 }
 // #endregion Define the total supported options argument list
 
@@ -30,7 +28,7 @@ use Drewlabs\Htr\RandomID;
  * @param string $version 
  * @return string 
  */
-function htr_help_function(string $version = '0.2.0')
+function htr_help_function()
 {
     $message = <<<EOT
     A fast and simple HTTP request Test runner
@@ -352,13 +350,13 @@ function main(array $args = [])
     // #endregion Load command line arguments and options
 
     if (isset($options['help'])) {
-        echo htr_help_function(HTR_VERSION);
+        echo htr_help_function(HTr_VERSION);
         return;
     }
 
     $path = $options['input'] ?? null;
     if (null === $path) {
-        echo htr_help_function(HTR_VERSION);
+        echo htr_help_function(HTr_VERSION);
         return;
     }
 

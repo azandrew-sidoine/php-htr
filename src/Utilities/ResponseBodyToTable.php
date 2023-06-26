@@ -100,7 +100,7 @@ class ResponseBodyToTable
     {
         $line = [];
         foreach ($array as $key => $value) {
-            $line[] = "[$key] => " . (is_array($value) ? '...' : (is_bool($value) || $value === 1 || $value === 0 ? (boolval($value) ? 'TRUE' : 'FALSE') : $value));
+            $line[] = "[$key] => " . (is_array($value) ? '...' : (is_bool($value) ? (boolval($value) ? 'TRUE' : 'FALSE') : $value));
         }
         return sprintf("[ %s ]", implode(', ', $line));
     }

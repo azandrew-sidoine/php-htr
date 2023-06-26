@@ -208,6 +208,12 @@ class ProjectTests
                     // #endregion Add Response result to the request output
 
                     $testOutputs = $this->executeTests($request, $response, $failures);
+                    
+                    $output = array_merge($output, $requestOutputs, $responseOutputs, $testOutputs);
+                    if (!$this->verbose) {
+                        $index += 1;
+                        $bar->update($index);
+                    }
                 } catch (BadRequestException $e) {
                     $response = $e->getResponse();
                     // We add the response to the list of responses in order to use it value as to resolve placeholders
@@ -224,11 +230,6 @@ class ProjectTests
                     $responseOutputs = ['', 'ERROR!', $e->getMessage()];
                 }
 
-                $output = array_merge($output, $requestOutputs, $responseOutputs, $testOutputs);
-                if (!$this->verbose) {
-                    $index += 1;
-                    $bar->update($index);
-                }
             });
         }
         if (is_string($then)) {

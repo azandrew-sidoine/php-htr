@@ -120,7 +120,7 @@ class Project implements Arrayable
 	 */
 	public static function fromAttributes(array $attributes = [])
 	{
-		return self::make($attributes['env'] ?? [], $attributes['components'] ?? [], $attributes['name'] ?? 'HTr project', $attributes['version']);
+		return self::make($attributes['env'] ?? [], $attributes['components'] ?? [], $attributes['name'] ?? 'HTr project', $attributes['version'] ?? (defined('HTr_VERSION') ? HTr_VERSION : '0.2.0'));
 	}
 
 	/**
