@@ -4,6 +4,7 @@
 #region required scripts
 require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/doc';
+require __DIR__ . '/postman';
 require __DIR__ . '/version';
 #endregion required scripts
 
@@ -43,6 +44,7 @@ function htr_help_function()
     SUBCOMMAND
         test                Exectue an HTTP Test
         doc                 Creates a markdown documentation
+        postman             Generate postman collection for htr configuration document
     
     OPTIONS:
         --input             Path to the json / yaml input
@@ -383,6 +385,10 @@ function main(array $args = [])
         case 'docs':
             # code...
             htr_doc_build($path, $options, $options['output'] ??  sprintf("%s%s%s.md", __DIR__,DIRECTORY_SEPARATOR, RandomID::new()->__invoke()), __DIR__);
+            break;
+        case 'postman':
+            # code...
+            htr_postman_build($path, $options, $options['output'] ??  sprintf("%s%s%s.md", __DIR__,DIRECTORY_SEPARATOR, RandomID::new()->__invoke()), __DIR__);
             break;
         default:
             # code...

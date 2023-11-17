@@ -19,6 +19,7 @@ use Drewlabs\Htr\Contracts\ComponentInterface;
 use Drewlabs\Htr\Contracts\RepositoryInterface;
 use Drewlabs\Htr\Exceptions\ConfigurationException;
 use Drewlabs\Htr\Utilities\JSONProjectCompiler;
+use Drewlabs\Htr\Utilities\Uuidv4Factory;
 use Drewlabs\Htr\Utilities\YAMLProjectCompiler;
 use Exception;
 use Generator;
@@ -72,7 +73,7 @@ class Project implements Arrayable
 		$this->components = $components;
 		$this->name = $name;
 		$this->version = $version ?? '0.1.0';
-		$this->id = $id ?? static::makeProjectId();
+		$this->id = $id ?? Uuidv4Factory::new()->create();
 	}
 
 	/**
@@ -103,7 +104,7 @@ class Project implements Arrayable
 	public static function make(array $env, array $components, string $name, string $version = "0.1.0")
 	{
 		// Call the project constructor to instanciate the project
-		$object = new self(self::buildComponents($components), $name, $version, static::makeProjectId());
+		$object = new self(self::buildComponents($components), $name, $version, Uuidv4Factory::new()->create());
 
 		// Configure project environment
 		$object->env(EnvRepository::make($env));
@@ -228,6 +229,16 @@ class Project implements Arrayable
 	{
 		# code...
 		return $this->name;
+	}
+
+	/**
+	 * Return the project id
+	 * 
+	 * @return string 
+	 */
+	public function getProjectId()
+	{
+		return $this->id;
 	}
 
 	/**
@@ -377,24 +388,4 @@ class Project implements Arrayable
 		}, $components);
 	}
 
-	/**
-	 * Generates a fake uuid value for the project
-	 * 
-	 * @return string 
-	 * @throws Exception 
-	 */
-	private static function makeProjectId()
-	{
-		return sprintf(
-			'%04X%04X-%04X-%04X-%04X-%04X%04X%04X',
-			random_int(0, 65535),
-			random_int(0, 65535),
-			random_int(0, 65535),
-			random_int(16384, 20479),
-			random_int(32768, 49151),
-			random_int(0, 65535),
-			random_int(0, 65535),
-			random_int(0, 65535)
-		);
-	}
 }

@@ -27,7 +27,7 @@ final class RequestDirectory implements ComponentInterface, Arrayable
 	/**
 	 * @var array
 	 */
-	private $items = null;
+	private $items = [];
 
 	/**
 	 * Tests property
@@ -87,6 +87,17 @@ final class RequestDirectory implements ComponentInterface, Arrayable
 			}, $this->items ?? []),
 			'tests' => $this->tests
 		];
+	}
+
+	/**
+	 * Add a new component to the list of items
+	 * 
+	 * @param ComponentInterface $item 
+	 * @return void 
+	 */
+	public function addItem(ComponentInterface $item): void
+	{
+		$this->items[] =  $item;
 	}
 
 	/**

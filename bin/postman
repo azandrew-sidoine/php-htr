@@ -1,0 +1,157 @@
+<?php
+
+require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
+
+//#region Doc builder
+
+use Drewlabs\Htr\Postman\Collections\Collection;
+use Drewlabs\Htr\Project;
+use Drewlabs\Htr\RequestDirectory;
+use Drewlabs\Htr\Utilities\Console;
+use Drewlabs\Htr\Utilities\Uuidv4Factory;
+use Random\RandomException;
+
+/**
+ * Returns the string after last occurence of $needle
+ * 
+ * @param string $needle 
+ * @param string $haystack 
+ * @return string|void 
+ */
+function htr_str_after_last(string $needle, string $haystack)
+{
+    if (!\is_bool($pos = htr_str_revpos($haystack, $needle))) {
+        return mb_substr($haystack, $pos + mb_strlen($needle));
+    }
+}
+
+/**
+ * Returns the string before last occurence of $needle
+ * 
+ * @param string $needle 
+ * @param string $haystack 
+ * @return string|void 
+ */
+function htr_str_before_last(string $needle, string $haystack)
+{
+    return substr($haystack, 0, htr_str_revpos($haystack, $needle));
+}
+
+/**
+ * Returns the reverse position of a string
+ * 
+ * @param string $haystack 
+ * @param string $needle 
+ * @return int|float|false 
+ */
+function htr_str_revpos(string $haystack, string $needle)
+{
+    $rev_pos = mb_strpos(strrev($haystack), strrev($needle));
+    if (false === $rev_pos) {
+        return false;
+    }
+
+    return mb_strlen($haystack) - $rev_pos - mb_strlen($needle);
+}
+
+/**
+ * Generate Postman collection from HTr project
+ * 
+ * @param string $path 
+ * @param array $options 
+ * @param RequestDirectory $reqDirectory 
+ * @param array $variables 
+ * @param string|null $parent 
+ * @return void 
+ * @throws RandomException 
+ * @throws InvalidArgumentException 
+ */
+function htr_directory_project(string $path, array $options, RequestDirectory $reqDirectory, array &$variables, string $parent = null)
+{
+    // Handle all document in the directory
+    $values = array_diff(scandir($path), ['..', '.']);
+
+    // 
+    foreach ($values as $value) {
+        $itemPath = $path . DIRECTORY_SEPARATOR . $value;
+        $name = strpos($value, '.') && in_array(htr_str_after_last('.', $value), ['json', 'yml', 'yaml']) ? htr_str_before_last('.', $value) : $value;
+        if ($parent) {
+            $name = "$parent" . " ". "$name";
+        }
+        if (is_dir($itemPath)) {
+            $directory = new RequestDirectory();
+            $directory->setId(Uuidv4Factory::new()->create());
+            $directory->setName(ucfirst($name));
+            htr_directory_project($itemPath, $options, $directory, $variables, basename($itemPath));
+            $reqDirectory->addItem($directory);
+        } else {
+            $readConfig = isset($options['json']) && boolval($options['json']) ? function (string $url) {
+                return @json_decode(file_get_contents($url), true);
+            } : function (string $url) {
+                return \yaml_parse(file_get_contents($url));
+            };
+            $directory = new RequestDirectory();
+            $directory->setId(Uuidv4Factory::new()->create());
+            $project = Project::fromAttributes(call_user_func_array($readConfig, [$itemPath]));
+            $directory->setName(ucfirst($name));
+            $directory->setDescription($project->getName());
+            foreach ($project->env()->values() as $v) {
+                $variables[$v->getName()] = $v->getValue();
+            }
+            $directory->setItems($project->getComponents());
+            $reqDirectory->addItem($directory);
+        }
+    }
+}
+
+/**
+ * 
+ * @param string $inputPath 
+ * @param array $options 
+ * @param string|null $outputPath 
+ * @param string $baseDirectory 
+ * @return void 
+ * @throws Exception 
+ * @throws InvalidArgumentException 
+ */
+function htr_postman_build(string $inputPath, array $options, string $outputPath = __DIR__, $baseDirectory = __DIR__)
+{
+
+    // Resolve the realpath to the path specified by the program user
+    $path = @htr_resolve_path($inputPath, $baseDirectory);
+
+    if (is_dir($path)) {
+        $directory = new RequestDirectory;
+        $directory->setId(Uuidv4Factory::new()->create());
+        $directory->setName(ucfirst(basename($path)));
+        $variables = [];
+        htr_directory_project($path, $options, $directory, $variables);
+        $project = Project::make($variables, $directory->getItems() ?? [], $options['name'] ?? (sprintf("%s %s", strtoupper($directory->getName() ?? "HTR"), "Project")));
+    } else {
+        $attributes = isset($options['json']) && boolval($options['json'])  ? @json_decode(file_get_contents($path), true) : \yaml_parse(file_get_contents($path));
+        if (!is_array($attributes) || empty($attributes)) {
+            echo Console::white(sprintf("Failed to parse configuration file located at %s", $inputPath), null, 'red') . PHP_EOL . PHP_EOL;
+            return;
+        }
+        $project = Project::fromAttributes($attributes);
+    }
+
+    // #region Create the output function
+    (function ($output) use ($outputPath) {
+        if (is_string($output)) {
+            if (!is_dir($dirname = dirname($outputPath))) {
+                mkdir($dirname, 0777, true);
+            }
+            // Write tests log file
+            file_put_contents($outputPath, $output);
+
+            echo Console::white("\nPostman collection written to $outputPath", null, 'green') . PHP_EOL;
+            echo PHP_EOL;
+        }
+    })(json_encode(Collection::fromProject($project)->toArray(), JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES));
+    // #endregion Create the output function
+
+    // Execute the completion steps
+    // $then(implode(PHP_EOL, $output) . PHP_EOL);
+}
+//#endregion Doc builder

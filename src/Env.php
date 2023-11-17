@@ -19,7 +19,6 @@ use Drewlabs\Htr\Contracts\Arrayable;
 
 class Env implements Descriptor, Arrayable
 {
-
 	use DescriptorTrait;
 
 	/**
