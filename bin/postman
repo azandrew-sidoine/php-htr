@@ -75,9 +75,6 @@ function htr_directory_project(string $path, array $options, RequestDirectory $r
     foreach ($values as $value) {
         $itemPath = $path . DIRECTORY_SEPARATOR . $value;
         $name = strpos($value, '.') && in_array(htr_str_after_last('.', $value), ['json', 'yml', 'yaml']) ? htr_str_before_last('.', $value) : $value;
-        if ($parent) {
-            $name = "$parent" . " ". "$name";
-        }
         if (is_dir($itemPath)) {
             $directory = new RequestDirectory();
             $directory->setId(Uuidv4Factory::new()->create());
