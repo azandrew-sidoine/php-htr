@@ -87,6 +87,12 @@ function htr_doc_get_translation_factory(string $name, string $lang = 'en')
     return (new Translations($lang))->get($name);
 }
 
+function htr_doc_get_method_color(string $method)
+{
+    $map = ['GET' => 'green', 'POST' => 'orange', 'PUT' => 'blue', 'DELETE' => 'red'];
+    return  $map[$method] ?? 'green';
+}
+
 
 /**
  * Create component documentation
@@ -96,16 +102,16 @@ function htr_doc_get_translation_factory(string $name, string $lang = 'en')
  */
 function htr_doc_create_component(ComponentInterface $component, string $header, EnvRepository $env, array &$output, string $lang = 'en')
 {
-    // TODO: Generate name component
     $output[] = '';
-    $output[] = sprintf("%s %s", $header, $component->getName());
-    $output[] = '';
+    $output[] = $component instanceof RequestInterface ? sprintf("%s $\small\\textsf{\color{%s} %s}$ %s", $header, htr_doc_get_method_color($component->getMethod()), strtoupper($component->getMethod()), $component->getName()) : sprintf("%s %s", $header, $component->getName());
 
     // Generate headers component
     if ($component instanceof RequestDirectory) {
-        $output[] = $component->getDescription() ?? '';
-        // TODO: Review the line added after the description later
-        $output[] = '';
+        if (!empty($description = $component->getDescription() ?? '')) {
+            $output[] = '';
+            $output[] = $description;
+        }
+
         foreach ($component->getItems() as $item) {
             htr_doc_create_component($item, "$header#", $env, $output, $lang);
         }
@@ -113,6 +119,7 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
     }
 
     if ($component instanceof RequestInterface) {
+        $output[] = '';
         $output[] = !empty(trim($description = $component->getDescription())) ? $description : htr_doc_get_translation_factory('description', $lang)($component->getMethod(), $component->getUrl());
 
         // TODO: Generate output for request headers
@@ -121,19 +128,20 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
         }, htr_doc_preprare_headers($component->getHeaders() ?? []));
         if (!empty($requestHeaders) || !empty($component->getAuthorization())) {
             $output[] = '';
-            $output[] = 'Request Headers:';
-
+            $output[] = '**$\small\textsf{Request}$ $\small\textsf{headers}$ :**';
         }
         if (!empty($requestHeaders)) {
+            $output[] = '';
             foreach ($requestHeaders as $value) {
                 foreach ($value as $k => $v) {
-                    $output[] = sprintf("\t`%s: %s`", $k, $v);
+                    $output[] = sprintf("\t %s: %s", $k, $v);
                 }
             }
         }
 
         // TODO: Add output for authorization headers
         if ($authorization = $component->getAuthorization()) {
+            $output[] = '';
             $authorization = AuthorizationHeaderCompiler::new($env)->compile($authorization);
             foreach ($authorization as $key => $value) {
                 $output[] = sprintf("\t`%s: %s`", $key, strlen($value) > 32 ? sprintf("%s...", substr($value, 0, 32)) : $value);
@@ -142,7 +150,7 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
         // TODO: Generate output for request body
         if (!empty($requestBody = $component->getBody())) {
             $output[] = '';
-            $output[] = 'Request Body:';
+            $output[] = '**$\small\textsf{Request}$ $\small\textsf{body}$ :**';
             $output[] = htr_doc_preprare_body($requestBody ?? [], $env);
         }
 
@@ -152,7 +160,7 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
                 return;
             }
             $output[] = '';
-            $output[] = "Response:";
+            $output[] = '**$\small\textsf{Response}$ :**';
             $responseHeaders = htr_doc_preprare_headers($component->getHeaders() ?? []);
             if (!empty($responseHeaders)) {
                 $responseHeaders = array_map(function ($header) use ($env) {
@@ -161,7 +169,6 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
                 $output[] = "\tHeaders:";
                 foreach ($requestHeaders as $value) {
                     foreach ($value as $k => $v) {
-                        # code...
                         $output[] = sprintf("\t\t`%s: %s`", $k, $v);
                     }
                 }
@@ -213,7 +220,7 @@ function htr_doc_build(string $inputPath, array $options, string $outputPath = _
     };
     // #endregion Create the output function
 
-    
+
     // Resolve the realpath to the path specified by the program user
     $path = @htr_resolve_path($inputPath, $baseDirectory);
 
@@ -221,7 +228,7 @@ function htr_doc_build(string $inputPath, array $options, string $outputPath = _
     $project = null;
     $header = "##";
     $output = [];
-    
+
     if (is_dir($path)) {
         $directory = new RequestDirectory;
         $directory->setId(Uuidv4Factory::new()->create());
@@ -245,6 +252,13 @@ function htr_doc_build(string $inputPath, array $options, string $outputPath = _
 
     // Set project header name
     $output[] = sprintf("# %s", $project->getName());
+    $output[] = "";
+    $output[] = sprintf("Date edition: %s", date('Y/m/d'));
+    $output[] = sprintf('Revision: %s', $project->getVersion() ?? '1.0');
+    if (isset($options['author']) && !is_null($options['author'])) {
+        $output[] = sprintf("Author: %s", $options['author']);
+    }
+
 
     // Add project component 
     foreach ($project->getComponents() as $component) {
