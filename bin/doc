@@ -128,7 +128,7 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
         }, htr_doc_preprare_headers($component->getHeaders() ?? []));
         if (!empty($requestHeaders) || !empty($component->getAuthorization())) {
             $output[] = '';
-            $output[] = '**$\small\textsf{Request}$ $\small\textsf{headers}$ :**';
+            $output[] = '**Request headers :**';
         }
         if (!empty($requestHeaders)) {
             $output[] = '';
@@ -150,7 +150,7 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
         // TODO: Generate output for request body
         if (!empty($requestBody = $component->getBody())) {
             $output[] = '';
-            $output[] = '**$\small\textsf{Request}$ $\small\textsf{body}$ :**';
+            $output[] = '**Request body :**';
             $output[] = htr_doc_preprare_body($requestBody ?? [], $env);
         }
 
@@ -160,7 +160,7 @@ function htr_doc_create_component(ComponentInterface $component, string $header,
                 return;
             }
             $output[] = '';
-            $output[] = '**$\small\textsf{Response}$ :**';
+            $output[] = '**Response :**';
             $responseHeaders = htr_doc_preprare_headers($component->getHeaders() ?? []);
             if (!empty($responseHeaders)) {
                 $responseHeaders = array_map(function ($header) use ($env) {
