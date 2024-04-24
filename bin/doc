@@ -253,10 +253,10 @@ function htr_doc_build(string $inputPath, array $options, string $outputPath = _
     // Set project header name
     $output[] = sprintf("# %s", $project->getName());
     $output[] = "";
-    $output[] = sprintf("Date edition: %s", date('Y/m/d'));
-    $output[] = sprintf('Revision: %s', $project->getVersion() ?? '1.0');
+    $output[] = sprintf("* Date edition: %s", date('Y/m/d'));
+    $output[] = sprintf('* Revision: %s', $project->getVersion() ?? '1.0');
     if (isset($options['author']) && !is_null($options['author'])) {
-        $output[] = sprintf("Author: %s", $options['author']);
+        $output[] = sprintf("* Author: %s", $options['author']);
     }
 
 
