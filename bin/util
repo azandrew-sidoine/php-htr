@@ -1,0 +1,99 @@
+<?php
+
+use Drewlabs\Htr\Project;
+use Drewlabs\Htr\RequestDirectory;
+use Drewlabs\Htr\Utilities\Uuidv4Factory;
+
+require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
+
+
+
+/**
+ * Returns the string before last occurence of $needle
+ * 
+ * @param string $needle 
+ * @param string $haystack 
+ * @return string|void 
+ */
+function htr_str_before_last(string $needle, string $haystack)
+{
+    return substr($haystack, 0, htr_str_revpos($haystack, $needle));
+}
+
+/**
+ * Returns the reverse position of a string
+ * 
+ * @param string $haystack 
+ * @param string $needle 
+ * @return int|float|false 
+ */
+function htr_str_revpos(string $haystack, string $needle)
+{
+    $rev_pos = mb_strpos(strrev($haystack), strrev($needle));
+    if (false === $rev_pos) {
+        return false;
+    }
+
+    return mb_strlen($haystack) - $rev_pos - mb_strlen($needle);
+}
+
+/**
+ * Returns the string after last occurence of $needle
+ * 
+ * @param string $needle 
+ * @param string $haystack 
+ * @return string|void 
+ */
+function htr_str_after_last(string $needle, string $haystack)
+{
+    if (!\is_bool($pos = htr_str_revpos($haystack, $needle))) {
+        return mb_substr($haystack, $pos + mb_strlen($needle));
+    }
+}
+
+/**
+ * Compile htr project directory into it components
+ * 
+ * @param string $path 
+ * @param array $options 
+ * @param RequestDirectory $reqDirectory 
+ * @param array $variables 
+ * @param string|null $parent 
+ * @return void 
+ * @throws RandomException 
+ * @throws InvalidArgumentException 
+ */
+function htr_compile_project_directory(string $path, array $options, RequestDirectory $reqDirectory, array &$variables, string $parent = null)
+{
+    // Handle all document in the directory
+    $values = array_diff(scandir($path), ['..', '.']);
+
+    // 
+    foreach ($values as $value) {
+        $itemPath = $path . DIRECTORY_SEPARATOR . $value;
+        $name = strpos($value, '.') && in_array(htr_str_after_last('.', $value), ['json', 'yml', 'yaml']) ? htr_str_before_last('.', $value) : $value;
+        if (is_dir($itemPath)) {
+            $directory = new RequestDirectory();
+            $directory->setId(Uuidv4Factory::new()->create());
+            $directory->setName(ucfirst($name));
+            htr_compile_project_directory($itemPath, $options, $directory, $variables, basename($itemPath));
+            $reqDirectory->addItem($directory);
+        } else {
+            $readConfig = isset($options['json']) && boolval($options['json']) ? function (string $url) {
+                return @json_decode(file_get_contents($url), true);
+            } : function (string $url) {
+                return \yaml_parse(file_get_contents($url));
+            };
+            $directory = new RequestDirectory();
+            $directory->setId(Uuidv4Factory::new()->create());
+            $project = Project::fromAttributes(call_user_func_array($readConfig, [$itemPath]));
+            $directory->setName(ucfirst($name));
+            $directory->setDescription($project->getName());
+            foreach ($project->env()->values() as $v) {
+                $variables[$v->getName()] = $v->getValue();
+            }
+            $directory->setItems($project->getComponents());
+            $reqDirectory->addItem($directory);
+        }
+    }
+}

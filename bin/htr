@@ -6,6 +6,7 @@ require $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/doc';
 require __DIR__ . '/postman';
 require __DIR__ . '/version';
+require __DIR__ . '/util';
 #endregion required scripts
 
 // #region Define the total supported options argument list

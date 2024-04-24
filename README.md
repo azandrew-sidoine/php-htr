@@ -24,7 +24,7 @@ To install the library simply run the command below:
 ```yaml
 version: 0.1.0
 # $schema: http://json-schema.org/id/<SCHEMA_ID>
-name: BIOSECU ADMIN API TESTS
+name: My Test API
 
 # Environment definitions
 # Note: Environemnts are used by the runner to customize requests

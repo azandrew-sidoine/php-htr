@@ -9,99 +9,9 @@ use Drewlabs\Htr\Project;
 use Drewlabs\Htr\RequestDirectory;
 use Drewlabs\Htr\Utilities\Console;
 use Drewlabs\Htr\Utilities\Uuidv4Factory;
-use Random\RandomException;
-
-/**
- * Returns the string after last occurence of $needle
- * 
- * @param string $needle 
- * @param string $haystack 
- * @return string|void 
- */
-function htr_str_after_last(string $needle, string $haystack)
-{
-    if (!\is_bool($pos = htr_str_revpos($haystack, $needle))) {
-        return mb_substr($haystack, $pos + mb_strlen($needle));
-    }
-}
-
-/**
- * Returns the string before last occurence of $needle
- * 
- * @param string $needle 
- * @param string $haystack 
- * @return string|void 
- */
-function htr_str_before_last(string $needle, string $haystack)
-{
-    return substr($haystack, 0, htr_str_revpos($haystack, $needle));
-}
-
-/**
- * Returns the reverse position of a string
- * 
- * @param string $haystack 
- * @param string $needle 
- * @return int|float|false 
- */
-function htr_str_revpos(string $haystack, string $needle)
-{
-    $rev_pos = mb_strpos(strrev($haystack), strrev($needle));
-    if (false === $rev_pos) {
-        return false;
-    }
-
-    return mb_strlen($haystack) - $rev_pos - mb_strlen($needle);
-}
 
 /**
  * Generate Postman collection from HTr project
- * 
- * @param string $path 
- * @param array $options 
- * @param RequestDirectory $reqDirectory 
- * @param array $variables 
- * @param string|null $parent 
- * @return void 
- * @throws RandomException 
- * @throws InvalidArgumentException 
- */
-function htr_directory_project(string $path, array $options, RequestDirectory $reqDirectory, array &$variables, string $parent = null)
-{
-    // Handle all document in the directory
-    $values = array_diff(scandir($path), ['..', '.']);
-
-    // 
-    foreach ($values as $value) {
-        $itemPath = $path . DIRECTORY_SEPARATOR . $value;
-        $name = strpos($value, '.') && in_array(htr_str_after_last('.', $value), ['json', 'yml', 'yaml']) ? htr_str_before_last('.', $value) : $value;
-        if (is_dir($itemPath)) {
-            $directory = new RequestDirectory();
-            $directory->setId(Uuidv4Factory::new()->create());
-            $directory->setName(ucfirst($name));
-            htr_directory_project($itemPath, $options, $directory, $variables, basename($itemPath));
-            $reqDirectory->addItem($directory);
-        } else {
-            $readConfig = isset($options['json']) && boolval($options['json']) ? function (string $url) {
-                return @json_decode(file_get_contents($url), true);
-            } : function (string $url) {
-                return \yaml_parse(file_get_contents($url));
-            };
-            $directory = new RequestDirectory();
-            $directory->setId(Uuidv4Factory::new()->create());
-            $project = Project::fromAttributes(call_user_func_array($readConfig, [$itemPath]));
-            $directory->setName(ucfirst($name));
-            $directory->setDescription($project->getName());
-            foreach ($project->env()->values() as $v) {
-                $variables[$v->getName()] = $v->getValue();
-            }
-            $directory->setItems($project->getComponents());
-            $reqDirectory->addItem($directory);
-        }
-    }
-}
-
-/**
  * 
  * @param string $inputPath 
  * @param array $options 
@@ -122,7 +32,7 @@ function htr_postman_build(string $inputPath, array $options, string $outputPath
         $directory->setId(Uuidv4Factory::new()->create());
         $directory->setName(ucfirst(basename($path)));
         $variables = [];
-        htr_directory_project($path, $options, $directory, $variables);
+        htr_compile_project_directory($path, $options, $directory, $variables);
         $project = Project::make($variables, $directory->getItems() ?? [], $options['name'] ?? (sprintf("%s %s", strtoupper($directory->getName() ?? "HTR"), "Project")));
     } else {
         $attributes = isset($options['json']) && boolval($options['json'])  ? @json_decode(file_get_contents($path), true) : \yaml_parse(file_get_contents($path));
