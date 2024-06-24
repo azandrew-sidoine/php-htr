@@ -4,29 +4,29 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3db61193b6f136f0f338b93f5a319747",
+    "content-hash": "1ed30c08fc713410d7632dd5ecf4dfbf",
     "packages": [
         {
             "name": "drewlabs/curl-client",
-            "version": "v0.3.3",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/azandrew-sidoine/drewlabs-curl-client.git",
-                "reference": "953c484d889809577011cdee92f017315bf5c1d4"
+                "reference": "6bdf5bc3557931dc6d91ef4423e7f4cef745e605"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azandrew-sidoine/drewlabs-curl-client/zipball/953c484d889809577011cdee92f017315bf5c1d4",
-                "reference": "953c484d889809577011cdee92f017315bf5c1d4",
+                "url": "https://api.github.com/repos/azandrew-sidoine/drewlabs-curl-client/zipball/6bdf5bc3557931dc6d91ef4423e7f4cef745e605",
+                "reference": "6bdf5bc3557931dc6d91ef4423e7f4cef745e605",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
-                "php": ">=7.0"
+                "php": ">=7.2"
             },
             "require-dev": {
                 "donatj/mock-webserver": "^2.5",
-                "phpunit/phpunit": "^6.0"
+                "phpunit/phpunit": ">=8.0"
             },
             "type": "library",
             "autoload": {
@@ -51,26 +51,26 @@
             ],
             "support": {
                 "issues": "https://github.com/azandrew-sidoine/drewlabs-curl-client/issues",
-                "source": "https://github.com/azandrew-sidoine/drewlabs-curl-client/tree/v0.3.3"
+                "source": "https://github.com/azandrew-sidoine/drewlabs-curl-client/tree/v0.4.0"
             },
-            "time": "2023-06-14T15:53:33+00:00"
+            "time": "2024-05-23T18:09:59+00:00"
         },
         {
             "name": "drewlabs/curl-rest-client",
-            "version": "v0.2.8",
+            "version": "v0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/azandrew-sidoine/curl-rest-client.git",
-                "reference": "d0d92ccee5b8d5e9ca72dd25f0aa4cadc53aa143"
+                "reference": "e55e4fa2f94d28653ffdd17ecf7dbe82eb3c353b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/azandrew-sidoine/curl-rest-client/zipball/d0d92ccee5b8d5e9ca72dd25f0aa4cadc53aa143",
-                "reference": "d0d92ccee5b8d5e9ca72dd25f0aa4cadc53aa143",
+                "url": "https://api.github.com/repos/azandrew-sidoine/curl-rest-client/zipball/e55e4fa2f94d28653ffdd17ecf7dbe82eb3c353b",
+                "reference": "e55e4fa2f94d28653ffdd17ecf7dbe82eb3c353b",
                 "shasum": ""
             },
             "require": {
-                "drewlabs/curl-client": "^0.3.0"
+                "drewlabs/curl-client": "^0.3.0|^0.4.0"
             },
             "require-dev": {
                 "donatj/mock-webserver": "^2.6",
@@ -95,22 +95,22 @@
             "description": "Built on top of curl client library, it offers REST supported HTTP verbs for sending request to backend service.",
             "support": {
                 "issues": "https://github.com/azandrew-sidoine/curl-rest-client/issues",
-                "source": "https://github.com/azandrew-sidoine/curl-rest-client/tree/v0.2.8"
+                "source": "https://github.com/azandrew-sidoine/curl-rest-client/tree/v0.4.0"
             },
-            "time": "2023-04-23T14:13:15+00:00"
+            "time": "2024-06-24T13:53:07+00:00"
         },
         {
             "name": "fakerphp/faker",
-            "version": "v1.23.0",
+            "version": "v1.23.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FakerPHP/Faker.git",
-                "reference": "e3daa170d00fde61ea7719ef47bb09bb8f1d9b01"
+                "reference": "bfb4fe148adbf78eff521199619b93a52ae3554b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/e3daa170d00fde61ea7719ef47bb09bb8f1d9b01",
-                "reference": "e3daa170d00fde61ea7719ef47bb09bb8f1d9b01",
+                "url": "https://api.github.com/repos/FakerPHP/Faker/zipball/bfb4fe148adbf78eff521199619b93a52ae3554b",
+                "reference": "bfb4fe148adbf78eff521199619b93a52ae3554b",
                 "shasum": ""
             },
             "require": {
@@ -136,11 +136,6 @@
                 "ext-mbstring": "Required for multibyte Unicode string functionality."
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-main": "v1.21-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Faker\\": "src/Faker/"
@@ -163,9 +158,9 @@
             ],
             "support": {
                 "issues": "https://github.com/FakerPHP/Faker/issues",
-                "source": "https://github.com/FakerPHP/Faker/tree/v1.23.0"
+                "source": "https://github.com/FakerPHP/Faker/tree/v1.23.1"
             },
-            "time": "2023-06-12T08:44:38+00:00"
+            "time": "2024-01-02T13:46:09+00:00"
         },
         {
             "name": "psr/container",
@@ -222,16 +217,16 @@
         },
         {
             "name": "symfony/deprecation-contracts",
-            "version": "v3.4.0",
+            "version": "v3.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/deprecation-contracts.git",
-                "reference": "7c3aff79d10325257a001fcf92d991f24fc967cf"
+                "reference": "0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/7c3aff79d10325257a001fcf92d991f24fc967cf",
-                "reference": "7c3aff79d10325257a001fcf92d991f24fc967cf",
+                "url": "https://api.github.com/repos/symfony/deprecation-contracts/zipball/0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1",
+                "reference": "0e0d29ce1f20deffb4ab1b016a7257c4f1e789a1",
                 "shasum": ""
             },
             "require": {
@@ -240,7 +235,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "3.4-dev"
+                    "dev-main": "3.5-dev"
                 },
                 "thanks": {
                     "name": "symfony/contracts",
@@ -269,7 +264,7 @@
             "description": "A generic function and convention to trigger deprecation notices",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.4.0"
+                "source": "https://github.com/symfony/deprecation-contracts/tree/v3.5.0"
             },
             "funding": [
                 {
@@ -285,7 +280,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-05-23T14:45:45+00:00"
+            "time": "2024-04-18T09:32:20+00:00"
         }
     ],
     "packages-dev": [],
