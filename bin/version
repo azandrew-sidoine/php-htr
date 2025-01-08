@@ -1,9 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-/**
- * Global HTr version variable definition
- */
+/** Global HTr version variable definition */
 if (!defined('HTr_VERSION')) {
-    define('HTr_VERSION', '0.2.32');
+    define('HTr_VERSION', '2');
 }
