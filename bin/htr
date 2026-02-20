@@ -229,7 +229,7 @@ function htr_get_extensions(string $format = 'yaml')
  * @param string $output 
  * @return void 
  */
-function htr_run_tests(string $inputPath, array $options, string $outputPath = null)
+function htr_run_tests(string $inputPath, array $options, ?string $outputPath = null)
 {
 
     // Resolve the realpath to the path specified by the program user

@@ -63,7 +63,7 @@ function htr_str_after_last(string $needle, string $haystack)
  * @throws RandomException 
  * @throws InvalidArgumentException 
  */
-function htr_compile_project_directory(string $path, array $options, RequestDirectory $reqDirectory, array &$variables, string $parent = null)
+function htr_compile_project_directory(string $path, array $options, RequestDirectory $reqDirectory, array &$variables, ?string $parent = null)
 {
     // Handle all document in the directory
     $values = array_diff(scandir($path), ['..', '.']);

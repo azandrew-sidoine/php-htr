@@ -65,15 +65,21 @@ class Console
      * @var array<string,string>
      */
     const BACKGROUND_COLORS = array(
-        'black'        => '40',   'red'          => '41',
-        'green'        => '42',   'yellow'       => '43',
-        'blue'         => '44',   'magenta'      => '45',
-        'cyan'         => '46',   'light_gray'   => '47',
+        'black'        => '40',
+        'red'          => '41',
+        'green'        => '42',
+        'yellow'       => '43',
+        'blue'         => '44',
+        'magenta'      => '45',
+        'cyan'         => '46',
+        'light_gray'   => '47',
     );
 
     const OPTIONS = array(
-        'underline'    => '4',    'blink'         => '5',
-        'reverse'      => '7',    'hidden'        => '8',
+        'underline'    => '4',
+        'blink'         => '5',
+        'reverse'      => '7',
+        'hidden'        => '8',
     );
 
     const EOF = "\n";
@@ -186,6 +192,10 @@ class Console
         array_shift($args);
 
         foreach ($args as $option) {
+            if (is_null($option)) {
+                continue;
+            }
+
             // Check if given background color found
             if (isset(self::BACKGROUND_COLORS[$option])) {
                 $colored_string .= "\033[" . self::BACKGROUND_COLORS[$option] . "m";
