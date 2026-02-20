@@ -33,7 +33,7 @@ class GraphNode implements Node
      * @param string $key 
      * @param string|null $parent 
      */
-    public function __construct($value, string $key, string $parent = null)
+    public function __construct($value, string $key, ?string $parent = null)
     {
         $this->value = $value;
         $this->key = $key;

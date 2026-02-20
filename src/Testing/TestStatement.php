@@ -66,7 +66,7 @@ class TestStatement
 	 * @return bool 
 	 * @throws RuntimeException 
 	 */
-	private function evaluateExpression($resolver, string $left, string $op = null, string $right = null)
+	private function evaluateExpression($resolver, string $left, ?string $op = null, string $right = null)
 	{
 		// Resolve the left hand side of the expression
 		$left = (false !== strpos($left, '[')) && (false !== strpos($left, ']')) ? $resolver($left) : $left;

@@ -24,7 +24,7 @@ class Metadata implements ComponentInterface
      * @throws RandomException 
      */
     public function __construct(
-        string $id = null,
+        ?string $id = null,
         private $name = "Postman Collection",
         private $schema = "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         private $exporter = null

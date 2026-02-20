@@ -67,7 +67,7 @@ class Project implements Arrayable
 	 * @param string $version		Project version property
 	 * @param string|null $id		Project id
 	 */
-	public function __construct(array $components, string $name, string $version = "0.1.0", string $id = null)
+	public function __construct(array $components, string $name, string $version = "0.1.0", ?string $id = null)
 	{
 		# code...
 		$this->components = $components;
@@ -83,7 +83,7 @@ class Project implements Arrayable
 	 *
 	 * @return EnvRepository
 	 */
-	public function env(RepositoryInterface $env = null)
+	public function env(?RepositoryInterface $env = null)
 	{
 		if (null !== $env) {
 			$this->env = $env;
@@ -248,7 +248,7 @@ class Project implements Arrayable
 	 * 
 	 * @return array 
 	 */
-	public function getRequests(\Closure $factory = null)
+	public function getRequests(?\Closure $factory = null)
 	{
 		$factory = $factory ?? function ($value) {
 			return $value;
@@ -265,7 +265,7 @@ class Project implements Arrayable
 	 * @param Closure|null $factory 
 	 * @return array 
 	 */
-	public function getRequestIn($in = [], \Closure $factory = null)
+	public function getRequestIn($in = [], ?\Closure $factory = null)
 	{
 		$factory = $factory ?? function ($value) {
 			return $value;
@@ -282,7 +282,7 @@ class Project implements Arrayable
 	 * @param Closure|null $factory 
 	 * @return array 
 	 */
-	public function getRequestWhereDirectoryIn(array $in, \Closure $factory = null)
+	public function getRequestWhereDirectoryIn(array $in, ?\Closure $factory = null)
 	{
 		$factory = $factory ?? function ($value) {
 			return $value;

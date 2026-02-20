@@ -74,7 +74,7 @@ final class EnvRepository implements RepositoryInterface
 	 *
 	 * @return string|mixed
 	 */
-	public function get(string $key = null, $default = null)
+	public function get(?string $key = null, $default = null)
 	{
 		$value = $this->values[$key] ?? null;
 		return $value ? $value->getValue() : $default ?? null;
