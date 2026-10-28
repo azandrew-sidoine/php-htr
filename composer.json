@@ -24,7 +24,7 @@
         }
     ],
     "prefer-stable": true,
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
         "ext-json": "*",
         "drewlabs/curl-rest-client": "^0.2.6|^0.3.0|^0.4.0",
